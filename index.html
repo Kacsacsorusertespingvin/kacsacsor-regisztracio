@@ -29,3 +29,82 @@
   <script type="module" src="register.js"></script>
 </body>
 </html>
+
+function showLoginForm() {
+  contentArea.innerHTML = `
+    <h2>Bejelentkezés</h2>
+    <form id="loginForm">
+      <input type="text" id="loginTeamName" placeholder="Csapatnév vagy admin" required /><br><br>
+      <input type="password" id="loginPassword" placeholder="Jelszó" required /><br><br>
+      <button type="submit">Bejelentkezés</button>
+    </form>
+    <div id="loginMsg"></div>
+  `;
+
+  document.getElementById("loginForm").addEventListener("submit", e => {
+    e.preventDefault();
+    loginUser();
+  });
+}
+
+// A bejelentkezés kezelése, admin és csapat külön
+async function loginUser() {
+  const name = document.getElementById("loginTeamName").value.trim();
+  const pass = document.getElementById("loginPassword").value.trim();
+  const msgDiv = document.getElementById("loginMsg");
+
+  msgDiv.textContent = "Bejelentkezés folyamatban...";
+
+  if (name.toLowerCase() === "admin" && pass === "admin123") {
+    // Admin bejelentkezett
+    msgDiv.textContent = "";
+    showAdminPanel();
+  } else {
+    // Itt jön majd a csapat bejelentkezés firebase ellenőrzés
+    // Most demo üzenet:
+    msgDiv.textContent = "Csapat bejelentkezés (még nincs megvalósítva)";
+  }
+}
+
+// Admin panel megjelenítése
+function showAdminPanel() {
+  contentArea.innerHTML = `
+    <h2>Admin felület</h2>
+    <button id="logoutBtn">Kijelentkezés</button>
+    <h3>Benevezett csapatok és válaszaik</h3>
+    <div id="adminTeamsList">Csapatok betöltése...</div>
+  `;
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    showLoginForm();
+  });
+
+  loadTeamsForAdmin();
+}
+
+// Csapatok betöltése admin számára (egyszerű demo, később Firebase adatbázisból)
+async function loadTeamsForAdmin() {
+  const adminTeamsList = document.getElementById("adminTeamsList");
+
+  // Demo adatok (ezt később cseréljük Firebase lekérésre)
+  const teams = [
+    { teamName: "CsapatA", members: ["Anna", "Béla", "Csaba", "Dóra"], answers: ["V1", "V2", "V3", "V4"] },
+    { teamName: "CsapatB", members: ["Erika", "Feri", "Gábor", "Helga"], answers: ["A1", "A2", "A3", "A4"] }
+  ];
+
+  let html = "<ul>";
+  teams.forEach(team => {
+    html += `<li><strong>${team.teamName}</strong> - Tagok: ${team.members.join(", ")}<br>
+             <em>Válaszok:</em><br>
+             <ol>
+              <li>${team.answers[0]}</li>
+              <li>${team.answers[1]}</li>
+              <li>${team.answers[2]}</li>
+              <li>${team.answers[3]}</li>
+             </ol>
+             </li><hr>`;
+  });
+  html += "</ul>";
+
+  adminTeamsList.innerHTML = html;
+}
