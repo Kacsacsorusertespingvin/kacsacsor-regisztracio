@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Csapat Regisztráció</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Verseny Regisztráció</h1>
+
+  <button id="registerBtn">Kattints ide a Regisztrációhoz</button>
+  <button id="viewTeamsBtn">Csapatok (csak admin)</button>
+
+  <div id="form" style="display:none;">
+    <input type="text" id="teamName" placeholder="Csapatnév"><br>
+    <input type="text" id="member1" placeholder="1. Csapattag"><br>
+    <input type="text" id="member2" placeholder="2. Csapattag"><br>
+    <input type="text" id="member3" placeholder="3. Csapattag"><br>
+    <input type="text" id="member4" placeholder="4. Csapattag"><br>
+    <button id="submitBtn">Véglegesítés</button>
+    <p id="msg"></p>
+  </div>
+
+  <div id="teams" style="display:none;">
+    <h2>Nevezett csapatok</h2>
+    <ul id="teamsList"></ul>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

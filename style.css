@@ -1,0 +1,18 @@
+﻿body {
+  background-color: black;
+  color: lime;
+  font-family: monospace;
+  text-align: center;
+  padding: 30px;
+}
+
+input, button {
+  padding: 10px;
+  margin: 5px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: none;
+  background-color: #111;
+  color: #0f0;
+  border: 1px solid #0f0;
+}
