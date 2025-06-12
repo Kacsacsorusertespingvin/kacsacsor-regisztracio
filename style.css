@@ -1,54 +1,112 @@
-body {
-  background-color: black;
-  color: #00ffcc;
-  font-family: 'Courier New', Courier, monospace;
-  text-align: center;
-  padding: 2em;
+// Firebase inicializálása
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, deleteObject } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBDNfbKRe9IBAnTKHoSGj06dWULk3i_kag",
+  authDomain: "segitsegkozpont.firebaseapp.com",
+  projectId: "segitsegkozpont",
+  storageBucket: "segitsegkozpont.appspot.com",
+  messagingSenderId: "910810037566",
+  appId: "1:910810037566:web:3022ce930951c5d61b406f",
+  measurementId: "G-T6PQ7DNVHS"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+function navigateTo(sectionId) {
+  document.querySelectorAll('.container > div').forEach(div => {
+    if (div.id) div.classList.add('hidden');
+  });
+  document.getElementById(sectionId).classList.remove('hidden');
 }
 
-.container {
-  max-width: 600px;
-  margin: auto;
+window.navigateTo = navigateTo;
+
+window.registerTeam = async () => {
+  const name = document.getElementById("teamName").value;
+  const members = ["member1", "member2", "member3", "member4"].map(id => document.getElementById(id).value);
+  const password = document.getElementById("teamPassword").value;
+
+  try {
+    await addDoc(collection(db, "teams"), { name, members, password });
+    alert(`Üdvözlünk titeket ${name} csapat!`);
+    navigateTo("upload");
+  } catch (e) {
+    alert("Hiba történt: " + e.message);
+  }
+};
+
+window.uploadSolutions = async () => {
+  const files = ["solution1", "solution2", "solution3", "solution4"].map(id => document.getElementById(id).files[0]);
+  const team = document.getElementById("teamName").value;
+  try {
+    for (let i = 0; i < files.length; i++) {
+      if (files[i]) {
+        const storageRef = ref(storage, `${team}/solution${i+1}`);
+        await uploadBytes(storageRef, files[i]);
+      }
+    }
+    alert("Feltöltés kész!");
+  } catch (e) {
+    alert("Feltöltési hiba: " + e.message);
+  }
+};
+
+window.adminLogin = () => {
+  const email = document.getElementById("adminEmail").value;
+  const password = document.getElementById("adminPassword").value;
+  signInWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      alert("Admin bejelentkezve");
+      showTeams();
+    })
+    .catch((error) => alert("Hiba: " + error.message));
+};
+
+async function deleteTeamFiles(teamName) {
+  for (let i = 1; i <= 4; i++) {
+    const fileRef = ref(storage, `${teamName}/solution${i}`);
+    try {
+      await deleteObject(fileRef);
+    } catch (e) {
+      console.warn(`Nem sikerült törölni a(z) ${teamName}/solution${i} fájlt: `, e);
+    }
+  }
 }
 
-h1, h2 {
-  color: #39ff14;
-  text-shadow: 0 0 5px #39ff14, 0 0 10px #00ffcc;
+async function showTeams() {
+  const list = document.getElementById("teamList");
+  list.innerHTML = "";
+  const snapshot = await getDocs(collection(db, "teams"));
+  snapshot.forEach(docSnap => {
+    const team = docSnap.data();
+    const item = document.createElement("li");
+    item.textContent = `${team.name}: ${team.members.join(", ")}`;
+
+    const del = document.createElement("button");
+    del.textContent = "Törlés";
+    del.onclick = async () => {
+      if (confirm(`Biztosan törlöd a(z) ${team.name} csapatot?`)) {
+        await deleteTeamFiles(team.name);
+        await deleteDoc(doc(db, "teams", docSnap.id));
+        showTeams();
+      }
+    };
+    item.appendChild(del);
+    list.appendChild(item);
+  });
 }
 
-input, button {
-  display: block;
-  margin: 0.5em auto;
-  padding: 0.5em;
-  background-color: #111;
-  color: #00ffcc;
-  border: 2px solid #39ff14;
-  border-radius: 8px;
-  font-size: 1em;
-  width: 80%;
-}
+onAuthStateChanged(auth, user => {
+  if (user && user.email.includes("@")) {
+    showTeams();
+    navigateTo("teams");
+  }
+});
 
-button:hover {
-  background-color: #222;
-  box-shadow: 0 0 10px #00ffcc;
-}
-
-.hidden {
-  display: none;
-}
-
-.button-group button {
-  margin: 1em;
-  padding: 1em 2em;
-  font-size: 1.2em;
-  background-color: #111;
-  color: #00ffcc;
-  border: 2px solid #00ffcc;
-  border-radius: 12px;
-  transition: 0.3s;
-}
-
-.button-group button:hover {
-  background-color: #222;
-  box-shadow: 0 0 15px #00ffcc, 0 0 20px #39ff14;
-}
