@@ -4,102 +4,251 @@
   <meta charset="UTF-8" />
   <title>KCSSPNR Vetélkedő</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+    /* Alapok */
     body {
-      background: black;
-      color: #0f0; /* neon zöld */
-      font-family: monospace;
-      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      background: #000;
+      color: #0f0;
+      font-family: 'Orbitron', monospace, monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 20px;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    button {
-      margin: 5px;
-      background: transparent;
-      border: 1px solid #0ff; /* neon kék */
+
+    h1 {
+      font-size: 3rem;
       color: #0ff;
-      padding: 10px 20px;
+      text-shadow:
+        0 0 10px #0ff,
+        0 0 20px #0ff,
+        0 0 30px #0ff;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      background: transparent;
+      border: 2px solid #0ff;
+      color: #0ff;
+      padding: 15px 30px;
+      font-size: 1.1rem;
+      font-weight: 700;
       cursor: pointer;
-      font-size: 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      box-shadow:
+        0 0 5px #0ff,
+        0 0 10px #0ff,
+        0 0 20px #0ff;
     }
-    button:hover {
+    button:hover, button:focus {
       background: #0ff;
-      color: black;
+      color: #000;
+      box-shadow:
+        0 0 10px #0ff,
+        0 0 20px #0ff,
+        0 0 30px #0ff,
+        0 0 40px #0ff;
+      outline: none;
     }
+
     section {
+      background: #010101;
+      border: 2px solid #0f0;
+      border-radius: 12px;
+      padding: 30px 40px;
+      width: 100%;
+      max-width: 550px;
+      box-shadow:
+        0 0 20px #0f0,
+        inset 0 0 10px #0f0;
+      color: #0f0;
       display: none;
-      margin-top: 20px;
-      border: 1px solid #0f0;
-      padding: 15px;
-      border-radius: 5px;
+      flex-direction: column;
     }
     section.active {
-      display: block;
+      display: flex;
     }
+
     label {
       display: block;
-      margin-top: 10px;
-    }
-    input {
-      width: 100%;
-      padding: 5px;
-      background: black;
-      border: 1px solid #0ff;
-      color: #0f0;
-      font-family: monospace;
-    }
-    #welcomeMsg {
       margin-top: 15px;
-      font-weight: bold;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-shadow:
+        0 0 4px #0f0;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="number"] {
+      margin-top: 5px;
+      padding: 10px 15px;
+      font-size: 1rem;
+      font-family: 'Orbitron', monospace;
+      background: #000;
+      border: 2px solid #0ff;
+      border-radius: 8px;
+      color: #0f0;
+      text-shadow: 0 0 5px #0f0;
+      box-shadow:
+        0 0 10px #0ff inset;
+      width: 100%;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    input[type="email"]:focus,
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #0f0;
+      box-shadow:
+        0 0 10px #0f0 inset,
+        0 0 10px #0f0;
+    }
+
+    #welcomeMsg {
+      margin-top: 25px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #0f0;
+      text-shadow:
+        0 0 5px #0f0,
+        0 0 10px #0f0;
+      user-select: text;
+    }
+
+    ul#teamList {
+      list-style: none;
+      padding-left: 0;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #0ff;
+      border-radius: 8px;
+      box-shadow:
+        0 0 10px #0ff inset;
+    }
+    ul#teamList li {
+      padding: 12px 15px;
+      border-bottom: 1px solid #0f0;
+      font-size: 1.1rem;
+      text-shadow: 0 0 5px #0f0;
+      cursor: default;
+      user-select: text;
+    }
+    ul#teamList li:last-child {
+      border-bottom: none;
+    }
+
+    #adminStatus {
+      margin-top: 15px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    /* Scrollbar neon */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #000;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #0ff;
+      border-radius: 5px;
+      box-shadow:
+        0 0 5px #0ff;
+    }
+
+    /* Mobilon is szép legyen */
+    @media(max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+      button {
+        font-size: 1rem;
+        padding: 12px 20px;
+      }
+      section {
+        padding: 20px 25px;
+        max-width: 90vw;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1>Regisztráció a KCSSPNR Vetélkedőre</h1>
+  <h1>KCSSPNR Vetélkedő</h1>
 
   <nav>
-    <button id="btnRegister">Csapat regisztrálása</button>
-    <button id="btnTeams">Nevezett csapatok</button>
-    <button id="btnAdminLogin">Bejelentkezés (admin)</button>
+    <button id="btnRegister" aria-label="Csapat regisztrálása">Csapat regisztrálása</button>
+    <button id="btnTeams" aria-label="Nevezett csapatok megtekintése">Nevezett csapatok</button>
+    <button id="btnAdminLogin" aria-label="Admin bejelentkezés">Bejelentkezés (admin)</button>
   </nav>
 
-  <section id="registerSection">
+  <section id="registerSection" role="region" aria-live="polite" aria-label="Csapat regisztrációs felület">
     <h2>Csapat regisztrálása</h2>
-    <label>Csapatnév:<input type="text" id="teamName" autocomplete="off"></label>
-    <label>Tag 1:<input type="text" id="member1" autocomplete="off"></label>
-    <label>Tag 2:<input type="text" id="member2" autocomplete="off"></label>
-    <label>Tag 3:<input type="text" id="member3" autocomplete="off"></label>
-    <label>Tag 4:<input type="text" id="member4" autocomplete="off"></label>
-    <label>Jelszó:<input type="password" id="teamPassword" autocomplete="new-password"></label>
-    <button id="registerBtn">Regisztráció</button>
-    <p id="welcomeMsg"></p>
+    <label for="teamName">Csapatnév:</label>
+    <input type="text" id="teamName" autocomplete="off" aria-required="true" />
+    <label for="member1">Tag 1:</label>
+    <input type="text" id="member1" autocomplete="off" aria-required="true" />
+    <label for="member2">Tag 2:</label>
+    <input type="text" id="member2" autocomplete="off" aria-required="true" />
+    <label for="member3">Tag 3:</label>
+    <input type="text" id="member3" autocomplete="off" aria-required="true" />
+    <label for="member4">Tag 4:</label>
+    <input type="text" id="member4" autocomplete="off" aria-required="true" />
+    <label for="teamPassword">Jelszó:</label>
+    <input type="password" id="teamPassword" autocomplete="new-password" aria-required="true" />
+    <button id="registerBtn" aria-label="Regisztráció véglegesítése">Regisztráció</button>
+    <p id="welcomeMsg" role="alert" aria-live="assertive"></p>
   </section>
 
-  <section id="teamsSection">
+  <section id="teamsSection" role="region" aria-label="Nevezett csapatok listája">
     <h2>Nevezett csapatok</h2>
-    <ul id="teamList"></ul>
+    <ul id="teamList" tabindex="0" aria-live="polite"></ul>
   </section>
 
-  <section id="adminSection">
+  <section id="adminSection" role="region" aria-label="Admin bejelentkezési felület">
     <h2>Admin bejelentkezés</h2>
-    <label>Email:<input type="email" id="adminEmail" autocomplete="off"></label>
-    <label>Jelszó:<input type="password" id="adminPassword" autocomplete="off"></label>
-    <button id="adminLoginBtn">Bejelentkezés</button>
-    <p id="adminStatus" style="color: red; font-weight: bold;"></p>
+    <label for="adminEmail">Email:</label>
+    <input type="email" id="adminEmail" autocomplete="off" aria-required="true" />
+    <label for="adminPassword">Jelszó:</label>
+    <input type="password" id="adminPassword" autocomplete="off" aria-required="true" />
+    <button id="adminLoginBtn" aria-label="Admin bejelentkezés">Bejelentkezés</button>
+    <p id="adminStatus" role="alert"></p>
   </section>
 
 <script>
   // ------- Alap funkciók -------
 
-  // Szekciók megjelenítése
   function showSection(id) {
     document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
     const sec = document.getElementById(id);
     if (sec) sec.classList.add("active");
   }
 
-  // Kezdeti szekció
   showSection("registerSection");
 
-  // Gombok eseménykezelői
   document.getElementById("btnRegister").addEventListener("click", () => {
     showSection("registerSection");
     updateWelcomeMsg();
@@ -113,9 +262,8 @@
     document.getElementById("adminStatus").textContent = "";
   });
 
-  // ------- Adatok kezelése localStorage-ban -------
+  // ------- LocalStorage kezelés -------
 
-  // Csapatok listája tárolva localStorage-ban (JSON)
   function loadTeamsFromStorage() {
     const data = localStorage.getItem("kcsspnr_teams");
     return data ? JSON.parse(data) : [];
@@ -123,8 +271,6 @@
   function saveTeamsToStorage(teams) {
     localStorage.setItem("kcsspnr_teams", JSON.stringify(teams));
   }
-
-  // Regisztrált csapat infója localStorage-ban a "jelenlegi" bejelentkezett csapat tárolására
   function setCurrentTeam(teamName) {
     localStorage.setItem("kcsspnr_currentTeam", teamName);
   }
@@ -132,7 +278,7 @@
     return localStorage.getItem("kcsspnr_currentTeam");
   }
 
-  // ------- Regisztráció kezelése -------
+  // ------- Regisztráció -------
 
   document.getElementById("registerBtn").addEventListener("click", () => {
     const name = document.getElementById("teamName").value.trim();
@@ -156,17 +302,12 @@
       return;
     }
 
-    // Új csapat hozzáadása
     teams.push({ name, members, password });
     saveTeamsToStorage(teams);
-
-    // Bejelentkezésként kezeljük (örökre bent marad)
     setCurrentTeam(name);
 
-    // Üzenet frissítése
     updateWelcomeMsg();
 
-    // Űrlap ürítése
     document.getElementById("teamName").value = "";
     document.getElementById("member1").value = "";
     document.getElementById("member2").value = "";
@@ -175,7 +316,6 @@
     document.getElementById("teamPassword").value = "";
   });
 
-  // Üdvözlő szöveg frissítése a regisztrált (bejelentkezett) csapat nevével
   function updateWelcomeMsg() {
     const currentTeam = getCurrentTeam();
     const welcomeElem = document.getElementById("welcomeMsg");
@@ -185,10 +325,9 @@
       welcomeElem.textContent = "";
     }
   }
-  // oldal betöltésekor megjelenítjük, ha van bejelentkezett csapat
   updateWelcomeMsg();
 
-  // ------- Csapatok listázása -------
+  // ------- Csapatlista -------
 
   function renderTeamList() {
     const teams = loadTeamsFromStorage();
@@ -207,7 +346,7 @@
     });
   }
 
-  // ------- Admin bejelentkezés (dummy) -------
+  // ------- Admin bejelentkezés -------
 
   const ADMIN_EMAIL = "admin@example.com";
   const ADMIN_PASS = "admin123";
@@ -221,16 +360,12 @@
     if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
       status.style.color = "lime";
       status.textContent = "Sikeres admin bejelentkezés!";
-      // Itt lehetne megjeleníteni az admin felületet...
     } else {
       status.style.color = "red";
       status.textContent = "Hibás email vagy jelszó!";
     }
   });
-
 </script>
 
 </body>
 </html>
-
-
