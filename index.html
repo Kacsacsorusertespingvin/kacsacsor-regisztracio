@@ -2,87 +2,56 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Házi Verseny Regisztráció</title>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Csapat Regisztráció</title>
   <style>
     body {
+      font-family: 'Courier New', monospace;
       background-color: #000;
       color: #39ff14;
-      font-family: 'Share Tech Mono', monospace;
       text-align: center;
-      padding: 30px;
+      padding: 20px;
     }
-    h1 {
-      font-size: 36px;
-      margin-bottom: 40px;
-    }
-    button {
-      background-color: #39ff14;
-      color: #000;
-      border: none;
-      padding: 15px 30px;
-      margin: 10px;
-      font-size: 18px;
-      cursor: pointer;
-      border-radius: 10px;
-      transition: 0.3s;
-    }
-    button:hover {
-      background-color: #2ecc71;
-    }
-    .hidden {
-      display: none;
-    }
-    input {
-      margin: 10px;
+    input, button {
+      font-family: 'Courier New', monospace;
+      margin: 5px;
       padding: 10px;
-      font-size: 16px;
-      width: 250px;
-      border-radius: 6px;
-      border: 1px solid #39ff14;
-      background-color: #111;
+      background: black;
       color: #39ff14;
+      border: 1px solid #39ff14;
     }
-    #teamList {
-      margin-top: 40px;
-      text-align: left;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
-  <h1>🏆 Regisztráció a Házi Versenyre</h1>
+  <h1>Regisztráció</h1>
 
-  <button onclick="showForm()">Kattints ide a Regisztrációhoz</button>
-  <button onclick="showTeams()">Nevezett csapatok</button>
+  <div id="adminLogin">
+    <h2>Admin bejelentkezés</h2>
+    <input type="email" id="adminEmail" placeholder="Email"><br>
+    <input type="password" id="adminPassword" placeholder="Jelszó"><br>
+    <button onclick="login()">Bejelentkezés</button>
+    <p id="loginStatus"></p>
+  </div>
 
-  <form id="registrationForm" class="hidden">
-    <h2>Regisztrációs űrlap</h2>
-    <input type="text" id="teamName" placeholder="Csapatnév" required><br>
-    <input type="text" id="member1" placeholder="1. csapattag" required><br>
-    <input type="text" id="member2" placeholder="2. csapattag"><br>
-    <input type="text" id="member3" placeholder="3. csapattag"><br>
-    <input type="text" id="member4" placeholder="4. csapattag"><br>
-    <button type="button" id="submitTeam">Véglegesítés</button>
-  </form>
+  <div>
+    <button onclick="showRegistration()">Kattints ide a Regisztrációhoz</button>
+    <button onclick="showTeams()">Nevezett csapatok</button>
+  </div>
+
+  <div id="registrationForm" class="hidden">
+    <h3>Csapat Regisztráció</h3>
+    <input id="teamName" placeholder="Csapatnév"><br>
+    <input id="member1" placeholder="1. csapattag"><br>
+    <input id="member2" placeholder="2. csapattag"><br>
+    <input id="member3" placeholder="3. csapattag"><br>
+    <input id="member4" placeholder="4. csapattag"><br>
+    <button id="submitTeam">Véglegesítés</button>
+  </div>
 
   <div id="teamList" class="hidden"></div>
 
-  <!-- Firebase és saját kód -->
   <script type="module" src="app.js"></script>
-
-  <script>
-    function showForm() {
-      document.getElementById("registrationForm").classList.remove("hidden");
-      document.getElementById("teamList").classList.add("hidden");
-    }
-
-    function showTeams() {
-      document.getElementById("registrationForm").classList.add("hidden");
-      document.getElementById("teamList").classList.remove("hidden");
-    }
-  </script>
 </body>
 </html>
+
