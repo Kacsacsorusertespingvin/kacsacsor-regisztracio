@@ -1,7 +1,7 @@
 // Firebase inicializálása
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, deleteObject } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
 const firebaseConfig = {
@@ -65,6 +65,7 @@ window.adminLogin = () => {
     .then(() => {
       alert("Admin bejelentkezve");
       showTeams();
+      showDeletionLogs();
     })
     .catch((error) => alert("Hiba: " + error.message));
 };
@@ -109,6 +110,7 @@ async function showTeams() {
         await deleteDoc(doc(db, "teams", docSnap.id));
         await logDeletion(team.name);
         showTeams();
+        showDeletionLogs();
       }
     };
     item.appendChild(del);
@@ -116,9 +118,26 @@ async function showTeams() {
   });
 }
 
+async function showDeletionLogs() {
+  const logList = document.getElementById("deletionLogs");
+  if (!logList) return;
+  logList.innerHTML = "";
+
+  const logsSnapshot = await getDocs(query(collection(db, "deletionLogs"), orderBy("deletedAt", "desc")));
+  logsSnapshot.forEach(logDoc => {
+    const log = logDoc.data();
+    const li = document.createElement("li");
+    const date = log.deletedAt?.toDate().toLocaleString() || "ismeretlen idő";
+    li.textContent = `${log.team} törölve ${log.deletedBy} által ekkor: ${date}`;
+    logList.appendChild(li);
+  });
+}
+
 onAuthStateChanged(auth, user => {
   if (user && user.email.includes("@")) {
     showTeams();
+    showDeletionLogs();
     navigateTo("teams");
   }
 });
+
