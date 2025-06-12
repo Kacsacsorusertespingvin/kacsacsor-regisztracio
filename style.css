@@ -1,28 +1,54 @@
-/* style.css */
 body {
   background-color: black;
-  color: #00ff00;
-  font-family: 'Courier New', monospace;
+  color: #00ffcc;
+  font-family: 'Courier New', Courier, monospace;
   text-align: center;
-  padding: 20px;
+  padding: 2em;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+}
+
+h1, h2 {
+  color: #39ff14;
+  text-shadow: 0 0 5px #39ff14, 0 0 10px #00ffcc;
 }
 
 input, button {
-  padding: 10px;
-  margin: 8px;
-  font-size: 16px;
+  display: block;
+  margin: 0.5em auto;
+  padding: 0.5em;
   background-color: #111;
-  color: #0f0;
-  border: 2px solid #0f0;
-  border-radius: 6px;
+  color: #00ffcc;
+  border: 2px solid #39ff14;
+  border-radius: 8px;
+  font-size: 1em;
+  width: 80%;
 }
 
 button:hover {
-  background-color: #0f0;
-  color: black;
+  background-color: #222;
+  box-shadow: 0 0 10px #00ffcc;
 }
 
-#teamsList {
-  list-style: none;
-  padding: 0;
+.hidden {
+  display: none;
+}
+
+.button-group button {
+  margin: 1em;
+  padding: 1em 2em;
+  font-size: 1.2em;
+  background-color: #111;
+  color: #00ffcc;
+  border: 2px solid #00ffcc;
+  border-radius: 12px;
+  transition: 0.3s;
+}
+
+.button-group button:hover {
+  background-color: #222;
+  box-shadow: 0 0 15px #00ffcc, 0 0 20px #39ff14;
 }
