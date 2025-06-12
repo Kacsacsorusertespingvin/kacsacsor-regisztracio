@@ -21,7 +21,6 @@
       color: #0ff;
       text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
       margin-bottom: 40px;
-      text-align: center;
     }
     nav {
       display: flex;
@@ -34,198 +33,143 @@
       background: transparent;
       border: 2px solid #0ff;
       color: #0ff;
-      padding: 15px 30px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      cursor: pointer;
+      padding: 10px 20px;
+      font-size: 1rem;
       border-radius: 8px;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 2px;
+      cursor: pointer;
     }
-    button:hover, button:focus {
+    button:hover {
       background: #0ff;
       color: #000;
     }
     section {
-      background: #010101;
-      border: 2px solid #0f0;
-      border-radius: 12px;
-      padding: 30px 40px;
-      width: 100%;
-      max-width: 550px;
       display: none;
       flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      max-width: 500px;
     }
-    section.active { display: flex; }
-    label { margin-top: 15px; font-weight: 600; font-size: 1.1rem; }
+    section.active {
+      display: flex;
+    }
     input {
-      margin-top: 5px;
-      padding: 10px 15px;
-      font-size: 1rem;
+      margin: 5px 0 15px;
+      padding: 10px;
+      font-family: 'Orbitron', monospace;
       background: #000;
       border: 2px solid #0ff;
-      border-radius: 8px;
       color: #0f0;
-      width: 100%;
-    }
-    #welcomeMsg, #adminStatus {
-      margin-top: 25px;
-      font-size: 1.2rem;
-      font-weight: 700;
-      text-align: center;
-    }
-    ul#teamList {
-      list-style: none;
-      padding-left: 0;
-      max-height: 300px;
-      overflow-y: auto;
-      border: 1px solid #0ff;
       border-radius: 8px;
     }
-    ul#teamList li {
-      padding: 12px 15px;
-      border-bottom: 1px solid #0f0;
-      font-size: 1.1rem;
+    #welcomeMsg {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #0f0;
     }
-    ul#teamList li:last-child { border-bottom: none; }
+    ul {
+      padding-left: 0;
+      list-style: none;
+    }
+    ul li {
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
   <h1>KCSSPNR Vetélkedő</h1>
   <nav>
-    <button id="btnRegister">Csapat regisztrálása</button>
-    <button id="btnTeams">Nevezett csapatok</button>
-    <button id="btnAdminLogin">Bejelentkezés (admin)</button>
+    <button onclick="showSection('register')">Csapat regisztrálása</button>
+    <button onclick="showSection('teams')">Nevezett csapatok</button>
+    <button onclick="showSection('admin')">Bejelentkezés (admin)</button>
   </nav>
-  <section id="registerSection">
+  <section id="register">
     <h2>Csapat regisztrálása</h2>
-    <label for="teamName">Csapatnév:</label>
-    <input type="text" id="teamName" />
-    <label for="member1">Tag 1:</label>
-    <input type="text" id="member1" />
-    <label for="member2">Tag 2:</label>
-    <input type="text" id="member2" />
-    <label for="member3">Tag 3:</label>
-    <input type="text" id="member3" />
-    <label for="member4">Tag 4:</label>
-    <input type="text" id="member4" />
-    <label for="teamPassword">Jelszó:</label>
-    <input type="password" id="teamPassword" />
-    <button id="registerBtn">Regisztráció</button>
+    <input id="teamName" placeholder="Csapatnév">
+    <input id="member1" placeholder="Tag 1">
+    <input id="member2" placeholder="Tag 2">
+    <input id="member3" placeholder="Tag 3">
+    <input id="member4" placeholder="Tag 4">
+    <input id="teamPassword" type="password" placeholder="Jelszó">
+    <button onclick="registerTeam()">Regisztráció</button>
     <p id="welcomeMsg"></p>
   </section>
-  <section id="teamsSection">
+  <section id="teams">
     <h2>Nevezett csapatok</h2>
     <ul id="teamList"></ul>
   </section>
-  <section id="adminSection">
-    <h2>Admin bejelentkezés</h2>
-    <label for="adminPassword">Jelszó:</label>
-    <input type="password" id="adminPassword" />
-    <button id="adminLoginBtn">Bejelentkezés</button>
+  <section id="admin">
+    <h2>Admin belépés</h2>
+    <input id="adminPassword" type="password" placeholder="Jelszó">
+    <button onclick="adminLogin()">Belépés</button>
     <p id="adminStatus"></p>
   </section>
   <script>
-    let isAdmin = false;
-    const ADMIN_PASSWORD = "wPk4ibAwk";
-
+    let adminLoggedIn = false;
     function showSection(id) {
-      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if (id === 'teams') renderTeams();
     }
-
-    function loadTeamsFromStorage() {
-      const data = localStorage.getItem("kcsspnr_teams");
-      return data ? JSON.parse(data) : [];
+    function registerTeam() {
+      const name = teamName.value.trim();
+      const members = [member1.value, member2.value, member3.value, member4.value];
+      const password = teamPassword.value;
+      if (!name || members.some(m => m.trim() === '') || !password) return alert("Minden mező kitöltése kötelező!");
+      const teams = JSON.parse(localStorage.getItem('teams') || '[]');
+      if (teams.find(t => t.name === name)) return alert("Már létezik ilyen nevű csapat!");
+      teams.push({ name, members, password, answers: {} });
+      localStorage.setItem('teams', JSON.stringify(teams));
+      localStorage.setItem('currentTeam', name);
+      updateWelcome();
     }
-
-    function saveTeamsToStorage(teams) {
-      localStorage.setItem("kcsspnr_teams", JSON.stringify(teams));
+    function updateWelcome() {
+      const team = localStorage.getItem('currentTeam');
+      welcomeMsg.textContent = team ? `Üdvözlünk titeket, ${team} csapat!` : '';
     }
-
-    function setCurrentTeam(name) {
-      localStorage.setItem("kcsspnr_currentTeam", name);
-    }
-
-    function getCurrentTeam() {
-      return localStorage.getItem("kcsspnr_currentTeam");
-    }
-
-    function updateWelcomeMsg() {
-      const currentTeam = getCurrentTeam();
-      const msg = document.getElementById("welcomeMsg");
-      msg.textContent = currentTeam ? `Üdvözlünk titeket, ${currentTeam} csapat!` : "";
-    }
-
-    function renderTeamList() {
-      const teams = loadTeamsFromStorage();
-      const ul = document.getElementById("teamList");
-      ul.innerHTML = "";
-      if (teams.length === 0) {
-        ul.innerHTML = "<li>Jelenleg nincs nevezett csapat.</li>";
-        return;
+    function adminLogin() {
+      if (adminPassword.value === 'wPk4ibAwk') {
+        adminLoggedIn = true;
+        adminStatus.textContent = 'Sikeres belépés';
+        showSection('teams');
+      } else {
+        adminStatus.textContent = 'Hibás jelszó';
       }
+    }
+    function renderTeams() {
+      const teams = JSON.parse(localStorage.getItem('teams') || '[]');
+      teamList.innerHTML = '';
+      if (!teams.length) return teamList.innerHTML = '<li>Nincs csapat.</li>';
       teams.forEach((team, index) => {
-        const li = document.createElement("li");
-        li.textContent = `${team.name} - Tagok: ${team.members.join(", ")}`;
-        if (isAdmin) {
-          const delBtn = document.createElement("button");
-          delBtn.textContent = "❌";
-          delBtn.style.marginLeft = "10px";
-          delBtn.onclick = () => {
-            if (confirm(`Biztosan törlöd a(z) ${team.name} csapatot?`)) {
-              teams.splice(index, 1);
-              saveTeamsToStorage(teams);
-              renderTeamList();
-            }
-          };
-          li.appendChild(delBtn);
-        }
-        ul.appendChild(li);
+        const li = document.createElement('li');
+        const answers = team.answers || {};
+        li.innerHTML = `
+          <strong>${team.name}</strong> - ${team.members.join(', ')}<br>
+          ${adminLoggedIn ? `
+            <label>Hangérzékelők: <input type="number" onchange="saveAnswer(${index}, 'hang', this.value)" value="${answers.hang || ''}"></label><br>
+            <label>Hőkamerák: <input type="number" onchange="saveAnswer(${index}, 'hokamera', this.value)" value="${answers.hokamera || ''}"></label><br>
+            <label>Kamerák: <input type="number" onchange="saveAnswer(${index}, 'kamera', this.value)" value="${answers.kamera || ''}"></label><br>
+            <label>Mozgásérzékelők: <input type="number" onchange="saveAnswer(${index}, 'mozgas', this.value)" value="${answers.mozgas || ''}"></label><br>
+            <button onclick="deleteTeam(${index})">Törlés</button>
+          ` : ''}`;
+        teamList.appendChild(li);
       });
     }
-
-    document.getElementById("registerBtn").addEventListener("click", () => {
-      const name = document.getElementById("teamName").value.trim();
-      const members = ["member1", "member2", "member3", "member4"].map(id => document.getElementById(id).value.trim());
-      const password = document.getElementById("teamPassword").value;
-      if (!name || members.includes("") || !password) {
-        alert("Tölts ki minden mezőt!");
-        return;
-      }
-      const teams = loadTeamsFromStorage();
-      if (teams.find(t => t.name.toLowerCase() === name.toLowerCase())) {
-        alert("Ez a csapatnév már foglalt!");
-        return;
-      }
-      teams.push({ name, members, password });
-      saveTeamsToStorage(teams);
-      setCurrentTeam(name);
-      updateWelcomeMsg();
-      ["teamName", "member1", "member2", "member3", "member4", "teamPassword"].forEach(id => document.getElementById(id).value = "");
-    });
-
-    document.getElementById("adminLoginBtn").addEventListener("click", () => {
-      const pass = document.getElementById("adminPassword").value;
-      const status = document.getElementById("adminStatus");
-      if (pass === ADMIN_PASSWORD) {
-        isAdmin = true;
-        status.style.color = "lime";
-        status.textContent = "Sikeres admin bejelentkezés!";
-        renderTeamList();
-      } else {
-        status.style.color = "red";
-        status.textContent = "Hibás jelszó!";
-      }
-    });
-
-    document.getElementById("btnRegister").onclick = () => { showSection("registerSection"); updateWelcomeMsg(); };
-    document.getElementById("btnTeams").onclick = () => { showSection("teamsSection"); renderTeamList(); };
-    document.getElementById("btnAdminLogin").onclick = () => { showSection("adminSection"); document.getElementById("adminStatus").textContent = ""; };
-
-    showSection("registerSection");
-    updateWelcomeMsg();
+    function saveAnswer(index, task, value) {
+      const teams = JSON.parse(localStorage.getItem('teams') || '[]');
+      if (!teams[index].answers) teams[index].answers = {};
+      teams[index].answers[task] = value;
+      localStorage.setItem('teams', JSON.stringify(teams));
+    }
+    function deleteTeam(index) {
+      const teams = JSON.parse(localStorage.getItem('teams') || '[]');
+      const removed = teams.splice(index, 1);
+      localStorage.setItem('teams', JSON.stringify(teams));
+      alert(`Törölve: ${removed[0].name}`);
+      renderTeams();
+    }
+    updateWelcome();
+    showSection('register');
   </script>
 </body>
 </html>
+
