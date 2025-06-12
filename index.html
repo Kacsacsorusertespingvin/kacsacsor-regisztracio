@@ -75,7 +75,7 @@
     section {
       display: none;
       width: 100%;
-      max-width: 500px;
+      max-width: 600px;
       background: rgba(0, 255, 255, 0.05);
       border: 2px solid #0ff;
       border-radius: 12px;
@@ -116,10 +116,10 @@
       padding: 10px;
       border: 1px solid #0ff;
       border-radius: 6px;
+      animation: slideIn 0.5s ease;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      animation: slideIn 0.5s ease;
     }
 
     .delete-btn {
@@ -163,9 +163,11 @@
   <h1>KCSSPNR Vetélkedő</h1>
   <nav>
     <button onclick="show('register')">Regisztráció</button>
+    <button onclick="show('rules')">Szabályzat</button>
     <button onclick="promptCode()">Nevezett csapatok</button>
   </nav>
 
+  <!-- Regisztráció -->
   <section id="register">
     <h2>Csapat regisztrálása</h2>
     <input id="teamName" placeholder="Csapatnév">
@@ -177,6 +179,19 @@
     <p id="msgRegister"></p>
   </section>
 
+  <!-- Szabályzat -->
+  <section id="rules">
+    <h2>Szabályzat</h2>
+    <p>A vetélkedő során szükséges legalább egy mobilinternettel rendelkező telefon.</p>
+    <p>Az egész esemény során használható az internet.</p>
+    <p>Az esemény során 4+1 feladatot kell majd megoldani, az 5. feladat az első 4 megoldására épül, és az ötödik feladat megoldását kérdezi majd a "Biztonsági panel".</p>
+    <p>Az esemény során minimum 2, maximum 4 fős csoportokat lehet alkotni, megoldásokat lehet cserélni, de vegyétek figyelembe, hogy csak az első csapat kap majd valami kisebb jutalmat.</p>
+    <p>A vetélkedő akkor ér véget, amikor az első csoport beírta helyesen a biztonsági kódot, megkapta a nyertes üzenetet, és megmutatta azt.</p>
+    <p>Amennyiben a feladatok túl nehéznek bizonyulnak, az oldalak frissülni fognak, és sárgával segítségek fognak megjelenni.</p>
+    <p>A feladatok QR kódok formájában lesznek szétszórva a teremben. A legkönnyebb módja a beolvasásuknak a Google Lens használata.</p>
+  </section>
+
+  <!-- Kód bekérés -->
   <section id="codeSection">
     <h2>Admin kód szükséges</h2>
     <input id="adminCode" type="password" placeholder="Írd be a kódot">
@@ -184,6 +199,7 @@
     <p id="msgCode"></p>
   </section>
 
+  <!-- Csapatok -->
   <section id="teams">
     <h2>Nevezett csapatok</h2>
     <ul id="teamsList"></ul>
@@ -205,12 +221,12 @@
       document.getElementById('msgRegister').textContent = 'Töltsd ki az összes mezőt!';
       return;
     }
-    let teams = JSON.parse(localStorage.getItem('teams')||'[]');
-    if (teams.find(t => t.name.toLowerCase()===name.toLowerCase())) {
+    let teams = JSON.parse(localStorage.getItem('teams') || '[]');
+    if (teams.find(t => t.name.toLowerCase() === name.toLowerCase())) {
       document.getElementById('msgRegister').textContent = 'Ez a név már foglalt!';
       return;
     }
-    teams.push({name, members});
+    teams.push({ name, members });
     localStorage.setItem('teams', JSON.stringify(teams));
     document.getElementById('msgRegister').textContent = `Regisztráció sikeres: ${name}`;
   }
@@ -233,12 +249,12 @@
   function renderTeams() {
     const ul = document.getElementById('teamsList');
     ul.innerHTML = '';
-    const teams = JSON.parse(localStorage.getItem('teams')||'[]');
+    const teams = JSON.parse(localStorage.getItem('teams') || '[]');
     if (!teams.length) {
       ul.innerHTML = '<li>— nincs csapat —</li>';
       return;
     }
-    teams.forEach((t,i) => {
+    teams.forEach((t, i) => {
       const li = document.createElement('li');
       const span = document.createElement('span');
       span.textContent = `${t.name} — Tagok: ${t.members.join(', ')}`;
@@ -246,7 +262,7 @@
       btn.textContent = 'Törlés';
       btn.className = 'delete-btn';
       btn.onclick = () => {
-        teams.splice(i,1);
+        teams.splice(i, 1);
         localStorage.setItem('teams', JSON.stringify(teams));
         renderTeams();
       };
@@ -260,7 +276,7 @@
 </script>
 </body>
 </html>
-  A regisztráció után semmi dolgod nincsen az oldalon! :)  
+A regisztráció előtt olvasd el a szabályzatot, azután semmi dolgod nem lesz ezen az oldalon! :)
 
 
 
