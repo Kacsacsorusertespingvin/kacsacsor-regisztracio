@@ -1,52 +1,28 @@
-#contentArea h2 {
-  text-shadow: 0 0 15px #00ff00;
+/* style.css */
+body {
+  background-color: black;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  padding: 20px;
 }
 
-#contentArea ul {
-  list-style-type: none;
+input, button {
+  padding: 10px;
+  margin: 8px;
+  font-size: 16px;
+  background-color: #111;
+  color: #0f0;
+  border: 2px solid #0f0;
+  border-radius: 6px;
+}
+
+button:hover {
+  background-color: #0f0;
+  color: black;
+}
+
+#teamsList {
+  list-style: none;
   padding: 0;
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid #00ff00;
-  border-radius: 10px;
-  box-shadow: 0 0 20px #00ff00;
-  margin-top: 20px;
-  text-align: left;
-}
-
-#contentArea li {
-  padding: 10px 15px;
-  border-bottom: 1px solid #004d00;
-}
-
-#contentArea li:last-child {
-  border-bottom: none;
-}
-
-#contentArea strong {
-  font-size: 1.2em;
-  color: #00ff88;
-  text-shadow: 0 0 10px #00ff88;
-}
-
-#contentArea em {
-  color: #00cc00;
-}
-
-#contentArea ol {
-  padding-left: 20px;
-  margin-top: 5px;
-}
-
-#logoutBtn {
-  margin-bottom: 20px;
-  background-color: #005500;
-  border-color: #00cc00;
-  box-shadow: 0 0 20px #00cc00;
-}
-
-#logoutBtn:hover {
-  background-color: #00cc00;
-  color: #000;
-  box-shadow: 0 0 40px #00ff00;
 }
