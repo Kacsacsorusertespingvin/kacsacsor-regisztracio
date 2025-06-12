@@ -1,19 +1,31 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="UTF-8">
-  <title>Házi Verseny</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Csapat Regisztráció</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Házi Verseny</h1>
+    <h1>Csapat Regisztráció</h1>
 
-    <button onclick="location.href='register.html'">Csapat regisztrálása</button>
-    <button onclick="location.href='teams.html'">Benevezett csapatok</button>
-    <button onclick="location.href='login.html'">Bejelentkezés (Admin)</button>
+    <form id="regForm">
+      <input type="text" id="teamName" placeholder="Csapatnév" required />
+      <input type="text" id="tag1" placeholder="1. csapattag" required />
+      <input type="text" id="tag2" placeholder="2. csapattag" required />
+      <input type="text" id="tag3" placeholder="3. csapattag" required />
+      <input type="text" id="tag4" placeholder="4. csapattag" required />
+      <input type="password" id="password" placeholder="Jelszó (csak a tiéd)" required />
+      <button type="submit">Regisztráció</button>
+    </form>
+
+    <div id="message"></div>
+
+    <p><a href="answers.html">Válaszfeltöltés (csapatoknak)</a></p>
+    <p><a href="login.html">Bejelentkezés (admin vagy csapatoknak)</a></p>
+    <p><a href="teams.html">Benevezett csapatok (mindenki számára)</a></p>
   </div>
+
+  <script type="module" src="register.js"></script>
 </body>
 </html>
-
-
