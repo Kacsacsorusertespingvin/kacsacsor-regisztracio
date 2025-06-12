@@ -1,7 +1,9 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// Firebase inicializálása
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
-// 🔐 A TE Firebase adataid:
 const firebaseConfig = {
   apiKey: "AIzaSyBDNfbKRe9IBAnTKHoSGj06dWULk3i_kag",
   authDomain: "segitsegkozpont.firebaseapp.com",
@@ -12,59 +14,79 @@ const firebaseConfig = {
   measurementId: "G-T6PQ7DNVHS"
 };
 
-// 🔧 Firebase inicializálása
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-// 💾 Regisztráció kezelése
-document.getElementById("submitTeam").addEventListener("click", async () => {
-  const teamName = document.getElementById("teamName").value.trim();
-  const member1 = document.getElementById("member1").value.trim();
-  const member2 = document.getElementById("member2").value.trim();
-  const member3 = document.getElementById("member3").value.trim();
-  const member4 = document.getElementById("member4").value.trim();
-
-  if (!teamName || !member1) {
-    alert("A csapatnév és legalább 1 csapattag megadása kötelező!");
-    return;
-  }
-
-  try {
-    await addDoc(collection(db, "teams"), {
-      teamName,
-      members: [member1, member2, member3, member4].filter(name => name !== "")
-    });
-    alert("Sikeres regisztráció!");
-    document.getElementById("registrationForm").reset();
-  } catch (e) {
-    console.error("Hiba a mentésnél: ", e);
-    alert("Hiba történt. Próbáld újra.");
-  }
-});
-
-// 📋 Csapatlista betöltése (csak neked – admin mód)
-async function loadTeams() {
-  const listDiv = document.getElementById("teamList");
-  if (!listDiv) return;
-
-  listDiv.innerHTML = "<p>Betöltés...</p>";
-
-  try {
-    const querySnapshot = await getDocs(collection(db, "teams"));
-    let html = "<h2>Nevezett csapatok</h2>";
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      html += `<div style="margin-bottom: 20px;">
-        <strong>Csapatnév:</strong> ${data.teamName}<br>
-        <strong>Tagok:</strong> ${data.members.join(", ")}
-      </div>`;
-    });
-    listDiv.innerHTML = html;
-  } catch (e) {
-    listDiv.innerHTML = "Hiba a csapatok betöltésekor.";
-  }
+function navigateTo(sectionId) {
+  document.querySelectorAll('.container > div').forEach(div => {
+    if (div.id) div.classList.add('hidden');
+  });
+  document.getElementById(sectionId).classList.remove('hidden');
 }
 
+window.navigateTo = navigateTo;
+
+window.registerTeam = async () => {
+  const name = document.getElementById("teamName").value;
+  const members = ["member1", "member2", "member3", "member4"].map(id => document.getElementById(id).value);
+  const password = document.getElementById("teamPassword").value;
+
+  try {
+    await addDoc(collection(db, "teams"), { name, members, password });
+    alert(`Üdvözlünk titeket ${name} csapat!`);
+    navigateTo("upload");
+  } catch (e) {
+    alert("Hiba történt: " + e.message);
+  }
+};
+
+window.uploadSolutions = async () => {
+  const files = ["solution1", "solution2", "solution3", "solution4"].map(id => document.getElementById(id).files[0]);
+  const team = document.getElementById("teamName").value;
+  try {
+    for (let i = 0; i < files.length; i++) {
+      if (files[i]) {
+        const storageRef = ref(storage, `${team}/solution${i+1}`);
+        await uploadBytes(storageRef, files[i]);
+      }
+    }
+    alert("Feltöltés kész!");
+  } catch (e) {
+    alert("Feltöltési hiba: " + e.message);
+  }
+};
+
+window.adminLogin = () => {
+  const email = document.getElementById("adminEmail").value;
+  const password = document.getElementById("adminPassword").value;
+  signInWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      alert("Admin bejelentkezve");
+      showTeams();
+    })
+    .catch((error) => alert("Hiba: " + error.message));
+};
+
+async function showTeams() {
+  const list = document.getElementById("teamList");
+  list.innerHTML = "";
+  const snapshot = await getDocs(collection(db, "teams"));
+  snapshot.forEach(docSnap => {
+    const team = docSnap.data();
+    const item = document.createElement("li");
+    item.textContent = `${team.name}: ${team.members.join(", ")}`;
+    list.appendChild(item);
+  });
+} 
+
+onAuthStateChanged(auth, user => {
+  if (user && user.email.includes("@")) {
+    showTeams();
+    navigateTo("teams");
+  }
+});
 // ⏱ Frissítés 30 másodpercenként
 setInterval(loadTeams, 30000);
 window.addEventListener("load", loadTeams);
