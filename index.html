@@ -45,6 +45,10 @@
       color: #0f0;
       font-family: monospace;
     }
+    #welcomeMsg {
+      margin-top: 15px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -59,14 +63,14 @@
 
   <section id="registerSection">
     <h2>Csapat regisztrálása</h2>
-    <label>Csapatnév:<input type="text" id="teamName"></label>
-    <label>Tag 1:<input type="text" id="member1"></label>
-    <label>Tag 2:<input type="text" id="member2"></label>
-    <label>Tag 3:<input type="text" id="member3"></label>
-    <label>Tag 4:<input type="text" id="member4"></label>
-    <label>Jelszó:<input type="password" id="teamPassword"></label>
+    <label>Csapatnév:<input type="text" id="teamName" autocomplete="off"></label>
+    <label>Tag 1:<input type="text" id="member1" autocomplete="off"></label>
+    <label>Tag 2:<input type="text" id="member2" autocomplete="off"></label>
+    <label>Tag 3:<input type="text" id="member3" autocomplete="off"></label>
+    <label>Tag 4:<input type="text" id="member4" autocomplete="off"></label>
+    <label>Jelszó:<input type="password" id="teamPassword" autocomplete="new-password"></label>
     <button id="registerBtn">Regisztráció</button>
-    <p id="welcomeMsg" style="margin-top:15px; font-weight:bold;"></p>
+    <p id="welcomeMsg"></p>
   </section>
 
   <section id="teamsSection">
@@ -76,72 +80,155 @@
 
   <section id="adminSection">
     <h2>Admin bejelentkezés</h2>
-    <label>Email:<input type="email" id="adminEmail"></label>
-    <label>Jelszó:<input type="password" id="adminPassword"></label>
+    <label>Email:<input type="email" id="adminEmail" autocomplete="off"></label>
+    <label>Jelszó:<input type="password" id="adminPassword" autocomplete="off"></label>
     <button id="adminLoginBtn">Bejelentkezés</button>
+    <p id="adminStatus" style="color: red; font-weight: bold;"></p>
   </section>
 
-  <script>
-    // Alap: csak az első szekció legyen látható
-    function showSection(id) {
-      document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-    }
+<script>
+  // ------- Alap funkciók -------
+
+  // Szekciók megjelenítése
+  function showSection(id) {
+    document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+    const sec = document.getElementById(id);
+    if (sec) sec.classList.add("active");
+  }
+
+  // Kezdeti szekció
+  showSection("registerSection");
+
+  // Gombok eseménykezelői
+  document.getElementById("btnRegister").addEventListener("click", () => {
     showSection("registerSection");
+    updateWelcomeMsg();
+  });
+  document.getElementById("btnTeams").addEventListener("click", () => {
+    showSection("teamsSection");
+    renderTeamList();
+  });
+  document.getElementById("btnAdminLogin").addEventListener("click", () => {
+    showSection("adminSection");
+    document.getElementById("adminStatus").textContent = "";
+  });
 
-    // Gombok kezelése
-    document.getElementById("btnRegister").onclick = () => showSection("registerSection");
-    document.getElementById("btnTeams").onclick = () => {
-      showSection("teamsSection");
-      loadTeams();
-    };
-    document.getElementById("btnAdminLogin").onclick = () => showSection("adminSection");
+  // ------- Adatok kezelése localStorage-ban -------
 
-    // Dummy csapatok tárolása helyben (localStorage helyett, teszt)
-    let teams = [];
+  // Csapatok listája tárolva localStorage-ban (JSON)
+  function loadTeamsFromStorage() {
+    const data = localStorage.getItem("kcsspnr_teams");
+    return data ? JSON.parse(data) : [];
+  }
+  function saveTeamsToStorage(teams) {
+    localStorage.setItem("kcsspnr_teams", JSON.stringify(teams));
+  }
 
-    function loadTeams() {
-      const ul = document.getElementById("teamList");
-      ul.innerHTML = "";
-      teams.forEach(team => {
-        const li = document.createElement("li");
-        li.textContent = `${team.name} - Tagok: ${team.members.join(", ")}`;
-        ul.appendChild(li);
-      });
+  // Regisztrált csapat infója localStorage-ban a "jelenlegi" bejelentkezett csapat tárolására
+  function setCurrentTeam(teamName) {
+    localStorage.setItem("kcsspnr_currentTeam", teamName);
+  }
+  function getCurrentTeam() {
+    return localStorage.getItem("kcsspnr_currentTeam");
+  }
+
+  // ------- Regisztráció kezelése -------
+
+  document.getElementById("registerBtn").addEventListener("click", () => {
+    const name = document.getElementById("teamName").value.trim();
+    const members = [
+      document.getElementById("member1").value.trim(),
+      document.getElementById("member2").value.trim(),
+      document.getElementById("member3").value.trim(),
+      document.getElementById("member4").value.trim()
+    ];
+    const password = document.getElementById("teamPassword").value;
+
+    if (!name || members.some(m => m === "") || !password) {
+      alert("Kérlek, tölts ki minden mezőt!");
+      return;
     }
 
-    // Regisztráció kezelése
-    document.getElementById("registerBtn").onclick = () => {
-      const name = document.getElementById("teamName").value.trim();
-      const members = [
-        document.getElementById("member1").value.trim(),
-        document.getElementById("member2").value.trim(),
-        document.getElementById("member3").value.trim(),
-        document.getElementById("member4").value.trim(),
-      ];
-      const password = document.getElementById("teamPassword").value;
+    let teams = loadTeamsFromStorage();
 
-      if (!name || members.some(m => !m) || !password) {
-        alert("Kérlek, tölts ki minden mezőt!");
-        return;
-      }
-      if (teams.find(t => t.name === name)) {
-        alert("Ez a csapatnév már foglalt!");
-        return;
-      }
+    if (teams.find(t => t.name.toLowerCase() === name.toLowerCase())) {
+      alert("Ez a csapatnév már foglalt!");
+      return;
+    }
 
-      teams.push({name, members, password});
-      document.getElementById("welcomeMsg").textContent = `Üdvözlünk titeket, ${name} csapat!`;
+    // Új csapat hozzáadása
+    teams.push({ name, members, password });
+    saveTeamsToStorage(teams);
 
-      // Kitöröljük az űrlapokat
-      document.getElementById("teamName").value = "";
-      document.getElementById("member1").value = "";
-      document.getElementById("member2").value = "";
-      document.getElementById("member3").value = "";
-      document.getElementById("member4").value = "";
-      document.getElementById("teamPassword").value = "";
-    };
-  </script>
+    // Bejelentkezésként kezeljük (örökre bent marad)
+    setCurrentTeam(name);
+
+    // Üzenet frissítése
+    updateWelcomeMsg();
+
+    // Űrlap ürítése
+    document.getElementById("teamName").value = "";
+    document.getElementById("member1").value = "";
+    document.getElementById("member2").value = "";
+    document.getElementById("member3").value = "";
+    document.getElementById("member4").value = "";
+    document.getElementById("teamPassword").value = "";
+  });
+
+  // Üdvözlő szöveg frissítése a regisztrált (bejelentkezett) csapat nevével
+  function updateWelcomeMsg() {
+    const currentTeam = getCurrentTeam();
+    const welcomeElem = document.getElementById("welcomeMsg");
+    if (currentTeam) {
+      welcomeElem.textContent = `Üdvözlünk titeket, ${currentTeam} csapat!`;
+    } else {
+      welcomeElem.textContent = "";
+    }
+  }
+  // oldal betöltésekor megjelenítjük, ha van bejelentkezett csapat
+  updateWelcomeMsg();
+
+  // ------- Csapatok listázása -------
+
+  function renderTeamList() {
+    const teams = loadTeamsFromStorage();
+    const ul = document.getElementById("teamList");
+    ul.innerHTML = "";
+
+    if (teams.length === 0) {
+      ul.innerHTML = "<li>Jelenleg nincs nevezett csapat.</li>";
+      return;
+    }
+
+    teams.forEach(team => {
+      const li = document.createElement("li");
+      li.textContent = `${team.name} - Tagok: ${team.members.join(", ")}`;
+      ul.appendChild(li);
+    });
+  }
+
+  // ------- Admin bejelentkezés (dummy) -------
+
+  const ADMIN_EMAIL = "admin@example.com";
+  const ADMIN_PASS = "admin123";
+
+  document.getElementById("adminLoginBtn").addEventListener("click", () => {
+    const email = document.getElementById("adminEmail").value.trim();
+    const pass = document.getElementById("adminPassword").value;
+
+    const status = document.getElementById("adminStatus");
+
+    if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+      status.style.color = "lime";
+      status.textContent = "Sikeres admin bejelentkezés!";
+      // Itt lehetne megjeleníteni az admin felületet...
+    } else {
+      status.style.color = "red";
+      status.textContent = "Hibás email vagy jelszó!";
+    }
+  });
+
+</script>
 
 </body>
 </html>
