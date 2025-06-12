@@ -2,51 +2,80 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>KCSSPNR Vetélkedő</title>
-  <script type="module" src="app.js"></script>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+  <h1>Regisztráció a KCSSPNR Vetélkedőre</h1>
+
+  <nav>
+    <button id="btnRegister">Csapat regisztrálása</button>
+    <button id="btnTeams">Nevezett csapatok</button>
+    <button id="btnAdminLogin">Bejelentkezés (admin)</button>
+  </nav>
+
   <div class="container">
-    <h1>Regisztráció a KCSSPNR Vetélkedőre</h1>
-    <div class="button-group">
-      <button onclick="navigateTo('register')">Csapat regisztrálása</button>
-      <button onclick="navigateTo('teams')">Nevezett csapatok</button>
-      <button onclick="navigateTo('admin')">Bejelentkezés (admin)</button>
-    </div>
 
-    <div id="register" class="hidden">
+    <!-- Csapat regisztráció -->
+    <section id="registerSection" class="hidden">
       <h2>Csapat regisztrálása</h2>
-      <input placeholder="Csapatnév" id="teamName" />
-      <input placeholder="Csapattag 1 neve" id="member1" />
-      <input placeholder="Csapattag 2 neve" id="member2" />
-      <input placeholder="Csapattag 3 neve" id="member3" />
-      <input placeholder="Csapattag 4 neve" id="member4" />
-      <input placeholder="Jelszó" type="password" id="teamPassword" />
-      <button onclick="registerTeam()">Véglegesítés</button>
-    </div>
+      <label>Csapatnév:</label>
+      <input type="text" id="teamName" required />
+      <label>Tag 1:</label>
+      <input type="text" id="member1" required />
+      <label>Tag 2:</label>
+      <input type="text" id="member2" required />
+      <label>Tag 3:</label>
+      <input type="text" id="member3" required />
+      <label>Tag 4:</label>
+      <input type="text" id="member4" required />
+      <label>Jelszó:</label>
+      <input type="password" id="teamPassword" required />
+      <button id="registerBtn">Regisztráció</button>
+    </section>
 
-    <div id="upload" class="hidden">
-      <h2>Megoldások feltöltése</h2>
-      <input type="file" id="solution1" />
-      <input type="file" id="solution2" />
-      <input type="file" id="solution3" />
-      <input type="file" id="solution4" />
-      <button onclick="uploadSolutions()">Feltöltés</button>
-    </div>
+    <!-- Megoldások feltöltése -->
+    <section id="uploadSection" class="hidden">
+      <h2>Üdvözlünk titeket <span id="welcomeTeamName"></span>!</h2>
+      <h3>Megoldások feltöltése</h3>
+      <label>Feladat 1:</label>
+      <input type="number" id="solution1" required />
+      <label>Feladat 2:</label>
+      <input type="number" id="solution2" required />
+      <label>Feladat 3:</label>
+      <input type="number" id="solution3" required />
+      <label>Feladat 4:</label>
+      <input type="number" id="solution4" required />
+      <button id="submitSolutionsBtn">Feltöltés</button>
+    </section>
 
-    <div id="teams" class="hidden">
+    <!-- Csapatok listája -->
+    <section id="teamsSection" class="hidden">
       <h2>Nevezett csapatok</h2>
       <ul id="teamList"></ul>
-    </div>
+    </section>
 
-    <div id="admin" class="hidden">
+    <!-- Admin bejelentkezés -->
+    <section id="adminSection" class="hidden">
       <h2>Admin bejelentkezés</h2>
-      <input placeholder="E-mail" id="adminEmail" />
-      <input placeholder="Jelszó" type="password" id="adminPassword" />
-      <button onclick="adminLogin()">Bejelentkezés</button>
-    </div>
+      <label>Email:</label>
+      <input type="email" id="adminEmail" required />
+      <label>Jelszó:</label>
+      <input type="password" id="adminPassword" required />
+      <button id="adminLoginBtn">Bejelentkezés</button>
+
+      <h3>Csapatok kezelése</h3>
+      <ul id="adminTeamList"></ul>
+
+      <h3>Törlési naplók</h3>
+      <ul id="deletionLogs"></ul>
+    </section>
+
   </div>
+
+  <script type="module" src="app.js"></script>
+
 </body>
 </html>
