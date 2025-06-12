@@ -1,1 +1,28 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Csapat regisztráció</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Csapat regisztrálása</h1>
 
+    <form id="registerForm">
+      <input type="text" id="teamName" placeholder="Csapatnév" required><br>
+      <input type="text" id="member1" placeholder="1. csapattag neve" required><br>
+      <input type="text" id="member2" placeholder="2. csapattag neve"><br>
+      <input type="text" id="member3" placeholder="3. csapattag neve"><br>
+      <input type="text" id="member4" placeholder="4. csapattag neve"><br>
+      <button type="submit">Véglegesítés</button>
+    </form>
+
+    <p id="status"></p>
+
+    <button onclick="location.href='index.html'">Vissza a főoldalra</button>
+  </div>
+
+  <script type="module" src="register.js"></script>
+</body>
+</html>
