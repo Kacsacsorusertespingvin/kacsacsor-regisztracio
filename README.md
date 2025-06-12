@@ -1,1 +1,0 @@
-# kacsacsor-regisztracio
