@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Válaszfeltöltés</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Feladatválaszok feltöltése</h1>
+    <input type="text" id="teamName" placeholder="Csapatnév"><br>
+    <input type="password" id="accessCode" placeholder="Titkos kód"><br>
+    
+    <textarea id="answer1" placeholder="1. feladat: Hangérzékelők válasz"></textarea><br>
+    <textarea id="answer2" placeholder="2. feladat: Hőkamerák válasz"></textarea><br>
+    <textarea id="answer3" placeholder="3. feladat: Kamerák válasz"></textarea><br>
+    <textarea id="answer4" placeholder="4. feladat: Mozgásérzékelők válasz"></textarea><br>
+    
+    <button onclick="uploadAnswers()">Válaszok beküldése</button>
+    <p id="message"></p>
+    <button onclick="location.href='index.html'">Vissza</button>
+  </div>
+
+  <script type="module" src="answers.js"></script>
+</body>
+</html>
