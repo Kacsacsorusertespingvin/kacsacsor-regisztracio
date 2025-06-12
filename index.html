@@ -1,31 +1,52 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="UTF-8">
-  <title>Verseny Regisztráció</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KCSSPNR Vetélkedő</title>
+  <script type="module" src="app.js"></script>
   <link rel="stylesheet" href="style.css">
-  <script type="module" src="firebase.js"></script>
-  <script type="module" src="app.js" defer></script>
 </head>
 <body>
-  <h1>Regisztráció</h1>
-  <button id="showFormBtn">Kattints ide a Regisztrációhoz</button>
-  <button id="showTeamsBtn">Nevezett csapatok</button>
+  <div class="container">
+    <h1>Regisztráció a KCSSPNR Vetélkedőre</h1>
+    <div class="button-group">
+      <button onclick="navigateTo('register')">Csapat regisztrálása</button>
+      <button onclick="navigateTo('teams')">Nevezett csapatok</button>
+      <button onclick="navigateTo('admin')">Bejelentkezés (admin)</button>
+    </div>
 
-  <div id="formContainer" style="display:none">
-    <input type="text" id="teamName" placeholder="Csapatnév">
-    <input type="text" id="member1" placeholder="1. csapattag">
-    <input type="text" id="member2" placeholder="2. csapattag">
-    <input type="text" id="member3" placeholder="3. csapattag">
-    <input type="text" id="member4" placeholder="4. csapattag">
-    <button id="submitBtn">Véglegesítés</button>
-    <p id="statusMsg"></p>
-  </div>
+    <div id="register" class="hidden">
+      <h2>Csapat regisztrálása</h2>
+      <input placeholder="Csapatnév" id="teamName" />
+      <input placeholder="Csapattag 1 neve" id="member1" />
+      <input placeholder="Csapattag 2 neve" id="member2" />
+      <input placeholder="Csapattag 3 neve" id="member3" />
+      <input placeholder="Csapattag 4 neve" id="member4" />
+      <input placeholder="Jelszó" type="password" id="teamPassword" />
+      <button onclick="registerTeam()">Véglegesítés</button>
+    </div>
 
-  <div id="teamsContainer" style="display:none">
-    <h2>Nevezett csapatok</h2>
-    <ul id="teamsList"></ul>
+    <div id="upload" class="hidden">
+      <h2>Megoldások feltöltése</h2>
+      <input type="file" id="solution1" />
+      <input type="file" id="solution2" />
+      <input type="file" id="solution3" />
+      <input type="file" id="solution4" />
+      <button onclick="uploadSolutions()">Feltöltés</button>
+    </div>
+
+    <div id="teams" class="hidden">
+      <h2>Nevezett csapatok</h2>
+      <ul id="teamList"></ul>
+    </div>
+
+    <div id="admin" class="hidden">
+      <h2>Admin bejelentkezés</h2>
+      <input placeholder="E-mail" id="adminEmail" />
+      <input placeholder="Jelszó" type="password" id="adminPassword" />
+      <button onclick="adminLogin()">Bejelentkezés</button>
+    </div>
   </div>
 </body>
 </html>
