@@ -1,8 +1,8 @@
 // Firebase inicializálása
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, deleteObject } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBDNfbKRe9IBAnTKHoSGj06dWULk3i_kag",
@@ -69,6 +69,29 @@ window.adminLogin = () => {
     .catch((error) => alert("Hiba: " + error.message));
 };
 
+async function deleteTeamFiles(teamName) {
+  for (let i = 1; i <= 4; i++) {
+    const fileRef = ref(storage, `${teamName}/solution${i}`);
+    try {
+      await deleteObject(fileRef);
+    } catch (e) {
+      console.warn(`Nem sikerült törölni a(z) ${teamName}/solution${i} fájlt: `, e);
+    }
+  }
+}
+
+async function logDeletion(teamName) {
+  try {
+    await addDoc(collection(db, "deletionLogs"), {
+      team: teamName,
+      deletedAt: serverTimestamp(),
+      deletedBy: auth.currentUser?.email || "ismeretlen"
+    });
+  } catch (e) {
+    console.warn("Hiba a törlési naplózás során:", e);
+  }
+}
+
 async function showTeams() {
   const list = document.getElementById("teamList");
   list.innerHTML = "";
@@ -77,9 +100,21 @@ async function showTeams() {
     const team = docSnap.data();
     const item = document.createElement("li");
     item.textContent = `${team.name}: ${team.members.join(", ")}`;
+
+    const del = document.createElement("button");
+    del.textContent = "Törlés";
+    del.onclick = async () => {
+      if (confirm(`Biztosan törlöd a(z) ${team.name} csapatot?`)) {
+        await deleteTeamFiles(team.name);
+        await deleteDoc(doc(db, "teams", docSnap.id));
+        await logDeletion(team.name);
+        showTeams();
+      }
+    };
+    item.appendChild(del);
     list.appendChild(item);
   });
-} 
+}
 
 onAuthStateChanged(auth, user => {
   if (user && user.email.includes("@")) {
@@ -87,6 +122,3 @@ onAuthStateChanged(auth, user => {
     navigateTo("teams");
   }
 });
-// ⏱ Frissítés 30 másodpercenként
-setInterval(loadTeams, 30000);
-window.addEventListener("load", loadTeams);
