@@ -1,8 +1,7 @@
-// Firebase SDK importálása
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// A te Firebase-konfigurációd
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBDNfbKRe9IBAnTKHoSGj06dWULk3i_kag",
   authDomain: "segitsegkozpont.firebaseapp.com",
@@ -13,41 +12,61 @@ const firebaseConfig = {
   measurementId: "G-T6PQ7DNVHS"
 };
 
-// Inicializálás
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Űrlap beküldése
-document.getElementById("registerForm").addEventListener("submit", async (e) => {
+const form = document.getElementById("regForm");
+const msg = document.getElementById("message");
+
+// Egyszerű hash függvény (nem kriptográfiailag erős, csak elrejti a jelszót)
+function simpleHash(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0; // 32bit integer
+  }
+  return hash.toString();
+}
+
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const teamName = document.getElementById("teamName").value.trim();
-  const member1 = document.getElementById("member1").value.trim();
-  const member2 = document.getElementById("member2").value.trim();
-  const member3 = document.getElementById("member3").value.trim();
-  const member4 = document.getElementById("member4").value.trim();
+  const teamName = form.teamName.value.trim();
+  const tag1 = form.tag1.value.trim();
+  const tag2 = form.tag2.value.trim();
+  const tag3 = form.tag3.value.trim();
+  const tag4 = form.tag4.value.trim();
+  const password = form.password.value;
 
-  if (!teamName || !member1) {
-    document.getElementById("status").textContent = "Kötelező a csapatnév és az első csapattag.";
+  if (!teamName || !tag1 || !tag2 || !tag3 || !tag4 || !password) {
+    msg.textContent = "Kérlek tölts ki minden mezőt!";
     return;
   }
 
-  try {
-    await addDoc(collection(db, "csapatok"), {
-      teamName,
-      members: [member1, member2, member3, member4].filter(name => name !== ""),
-      answers: {
-        "Hangérzékelők": "",
-        "Hőkamerák": "",
-        "Kamerák": "",
-        "Mozgásérzékelők": ""
-      }
-    });
+  // Ellenőrizni, hogy létezik-e már ez a csapatnév
+  const teamDocRef = doc(db, "csapatok", teamName);
+  const teamSnap = await getDoc(teamDocRef);
 
-    document.getElementById("status").textContent = "✅ Csapat sikeresen regisztrálva!";
-    document.getElementById("registerForm").reset();
-  } catch (error) {
-    console.error("Hiba:", error);
-    document.getElementById("status").textContent = "❌ Hiba történt a regisztrációnál.";
+  if (teamSnap.exists()) {
+    msg.textContent = "Ez a csapatnév már foglalt, kérlek válassz másikat!";
+    return;
   }
+
+  // Mentés Firestore-ba (jelszó hash-elve)
+  await setDoc(teamDocRef, {
+    tag1,
+    tag2,
+    tag3,
+    tag4,
+    passwordHash: simpleHash(password)
+  });
+
+  msg.style.color = "lightgreen";
+  msg.textContent = `Sikeres regisztráció! Most már feltöltheted a válaszaidat.`;
+
+  // Átirányítás válaszfeltöltő oldalra, átadva a csapat nevét
+  setTimeout(() => {
+    window.location.href = `answers.html?team=${encodeURIComponent(teamName)}`;
+  }, 1500);
 });
+
