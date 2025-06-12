@@ -2,56 +2,18 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Csapat Regisztráció</title>
-  <style>
-    body {
-      font-family: 'Courier New', monospace;
-      background-color: #000;
-      color: #39ff14;
-      text-align: center;
-      padding: 20px;
-    }
-    input, button {
-      font-family: 'Courier New', monospace;
-      margin: 5px;
-      padding: 10px;
-      background: black;
-      color: #39ff14;
-      border: 1px solid #39ff14;
-    }
-    .hidden { display: none; }
-  </style>
+  <title>Házi Verseny</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Regisztráció</h1>
+  <div class="container">
+    <h1>Házi Verseny</h1>
 
-  <div id="adminLogin">
-    <h2>Admin bejelentkezés</h2>
-    <input type="email" id="adminEmail" placeholder="Email"><br>
-    <input type="password" id="adminPassword" placeholder="Jelszó"><br>
-    <button onclick="login()">Bejelentkezés</button>
-    <p id="loginStatus"></p>
+    <button onclick="location.href='register.html'">Csapat regisztrálása</button>
+    <button onclick="location.href='teams.html'">Benevezett csapatok</button>
+    <button onclick="location.href='login.html'">Bejelentkezés (Admin)</button>
   </div>
-
-  <div>
-    <button onclick="showRegistration()">Kattints ide a Regisztrációhoz</button>
-    <button onclick="showTeams()">Nevezett csapatok</button>
-  </div>
-
-  <div id="registrationForm" class="hidden">
-    <h3>Csapat Regisztráció</h3>
-    <input id="teamName" placeholder="Csapatnév"><br>
-    <input id="member1" placeholder="1. csapattag"><br>
-    <input id="member2" placeholder="2. csapattag"><br>
-    <input id="member3" placeholder="3. csapattag"><br>
-    <input id="member4" placeholder="4. csapattag"><br>
-    <button id="submitTeam">Véglegesítés</button>
-  </div>
-
-  <div id="teamList" class="hidden"></div>
-
-  <script type="module" src="app.js"></script>
 </body>
 </html>
+
 
