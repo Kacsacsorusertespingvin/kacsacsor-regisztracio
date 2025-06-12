@@ -2,9 +2,50 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>KCSSPNR Vetélkedő</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background: black;
+      color: #0f0; /* neon zöld */
+      font-family: monospace;
+      padding: 20px;
+    }
+    button {
+      margin: 5px;
+      background: transparent;
+      border: 1px solid #0ff; /* neon kék */
+      color: #0ff;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover {
+      background: #0ff;
+      color: black;
+    }
+    section {
+      display: none;
+      margin-top: 20px;
+      border: 1px solid #0f0;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    section.active {
+      display: block;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 5px;
+      background: black;
+      border: 1px solid #0ff;
+      color: #0f0;
+      font-family: monospace;
+    }
+  </style>
 </head>
 <body>
 
@@ -16,67 +57,93 @@
     <button id="btnAdminLogin">Bejelentkezés (admin)</button>
   </nav>
 
-  <div class="container">
+  <section id="registerSection">
+    <h2>Csapat regisztrálása</h2>
+    <label>Csapatnév:<input type="text" id="teamName"></label>
+    <label>Tag 1:<input type="text" id="member1"></label>
+    <label>Tag 2:<input type="text" id="member2"></label>
+    <label>Tag 3:<input type="text" id="member3"></label>
+    <label>Tag 4:<input type="text" id="member4"></label>
+    <label>Jelszó:<input type="password" id="teamPassword"></label>
+    <button id="registerBtn">Regisztráció</button>
+    <p id="welcomeMsg" style="margin-top:15px; font-weight:bold;"></p>
+  </section>
 
-    <!-- Csapat regisztráció -->
-    <section id="registerSection" class="hidden">
-      <h2>Csapat regisztrálása</h2>
-      <label>Csapatnév:</label>
-      <input type="text" id="teamName" required />
-      <label>Tag 1:</label>
-      <input type="text" id="member1" required />
-      <label>Tag 2:</label>
-      <input type="text" id="member2" required />
-      <label>Tag 3:</label>
-      <input type="text" id="member3" required />
-      <label>Tag 4:</label>
-      <input type="text" id="member4" required />
-      <label>Jelszó:</label>
-      <input type="password" id="teamPassword" required />
-      <button id="registerBtn">Regisztráció</button>
-    </section>
+  <section id="teamsSection">
+    <h2>Nevezett csapatok</h2>
+    <ul id="teamList"></ul>
+  </section>
 
-    <!-- Megoldások feltöltése -->
-    <section id="uploadSection" class="hidden">
-      <h2>Üdvözlünk titeket <span id="welcomeTeamName"></span>!</h2>
-      <h3>Megoldások feltöltése</h3>
-      <label>Feladat 1:</label>
-      <input type="number" id="solution1" required />
-      <label>Feladat 2:</label>
-      <input type="number" id="solution2" required />
-      <label>Feladat 3:</label>
-      <input type="number" id="solution3" required />
-      <label>Feladat 4:</label>
-      <input type="number" id="solution4" required />
-      <button id="submitSolutionsBtn">Feltöltés</button>
-    </section>
+  <section id="adminSection">
+    <h2>Admin bejelentkezés</h2>
+    <label>Email:<input type="email" id="adminEmail"></label>
+    <label>Jelszó:<input type="password" id="adminPassword"></label>
+    <button id="adminLoginBtn">Bejelentkezés</button>
+  </section>
 
-    <!-- Csapatok listája -->
-    <section id="teamsSection" class="hidden">
-      <h2>Nevezett csapatok</h2>
-      <ul id="teamList"></ul>
-    </section>
+  <script>
+    // Alap: csak az első szekció legyen látható
+    function showSection(id) {
+      document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+    showSection("registerSection");
 
-    <!-- Admin bejelentkezés -->
-    <section id="adminSection" class="hidden">
-      <h2>Admin bejelentkezés</h2>
-      <label>Email:</label>
-      <input type="email" id="adminEmail" required />
-      <label>Jelszó:</label>
-      <input type="password" id="adminPassword" required />
-      <button id="adminLoginBtn">Bejelentkezés</button>
+    // Gombok kezelése
+    document.getElementById("btnRegister").onclick = () => showSection("registerSection");
+    document.getElementById("btnTeams").onclick = () => {
+      showSection("teamsSection");
+      loadTeams();
+    };
+    document.getElementById("btnAdminLogin").onclick = () => showSection("adminSection");
 
-      <h3>Csapatok kezelése</h3>
-      <ul id="adminTeamList"></ul>
+    // Dummy csapatok tárolása helyben (localStorage helyett, teszt)
+    let teams = [];
 
-      <h3>Törlési naplók</h3>
-      <ul id="deletionLogs"></ul>
-    </section>
+    function loadTeams() {
+      const ul = document.getElementById("teamList");
+      ul.innerHTML = "";
+      teams.forEach(team => {
+        const li = document.createElement("li");
+        li.textContent = `${team.name} - Tagok: ${team.members.join(", ")}`;
+        ul.appendChild(li);
+      });
+    }
 
-  </div>
+    // Regisztráció kezelése
+    document.getElementById("registerBtn").onclick = () => {
+      const name = document.getElementById("teamName").value.trim();
+      const members = [
+        document.getElementById("member1").value.trim(),
+        document.getElementById("member2").value.trim(),
+        document.getElementById("member3").value.trim(),
+        document.getElementById("member4").value.trim(),
+      ];
+      const password = document.getElementById("teamPassword").value;
 
-  <script type="module" src="app.js"></script>
+      if (!name || members.some(m => !m) || !password) {
+        alert("Kérlek, tölts ki minden mezőt!");
+        return;
+      }
+      if (teams.find(t => t.name === name)) {
+        alert("Ez a csapatnév már foglalt!");
+        return;
+      }
+
+      teams.push({name, members, password});
+      document.getElementById("welcomeMsg").textContent = `Üdvözlünk titeket, ${name} csapat!`;
+
+      // Kitöröljük az űrlapokat
+      document.getElementById("teamName").value = "";
+      document.getElementById("member1").value = "";
+      document.getElementById("member2").value = "";
+      document.getElementById("member3").value = "";
+      document.getElementById("member4").value = "";
+      document.getElementById("teamPassword").value = "";
+    };
+  </script>
 
 </body>
 </html>
+
 
