@@ -5,23 +5,28 @@
   <title>KCSSPNR Vetélkedő</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
     body {
       margin: 0;
       min-height: 100vh;
       background: #000;
       color: #0f0;
-      font-family: 'Orbitron', monospace;
+      font-family: 'Orbitron', monospace, monospace;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 30px 20px;
+      user-select: none;
     }
+
     h1 {
       font-size: 3rem;
       color: #0ff;
-      text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+      text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff;
       margin-bottom: 40px;
+      text-align: center;
     }
+
     nav {
       display: flex;
       gap: 20px;
@@ -29,147 +34,207 @@
       flex-wrap: wrap;
       justify-content: center;
     }
+
     button {
       background: transparent;
       border: 2px solid #0ff;
       color: #0ff;
-      padding: 10px 20px;
-      font-size: 1rem;
-      border-radius: 8px;
+      padding: 15px 30px;
+      font-size: 1.1rem;
+      font-weight: 700;
       cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      box-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff;
     }
-    button:hover {
+    button:hover, button:focus {
       background: #0ff;
       color: #000;
+      box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff;
+      outline: none;
     }
+
     section {
+      background: #010101;
+      border: 2px solid #0f0;
+      border-radius: 12px;
+      padding: 30px 40px;
+      width: 100%;
+      max-width: 550px;
+      box-shadow: 0 0 20px #0f0, inset 0 0 10px #0f0;
+      color: #0f0;
       display: none;
       flex-direction: column;
-      align-items: stretch;
-      width: 100%;
-      max-width: 500px;
     }
     section.active {
       display: flex;
     }
-    input {
-      margin: 5px 0 15px;
-      padding: 10px;
-      font-family: 'Orbitron', monospace;
+
+    input[type="text"], input[type="number"] {
+      margin-top: 5px;
+      padding: 10px 15px;
+      font-size: 1rem;
       background: #000;
       border: 2px solid #0ff;
-      color: #0f0;
       border-radius: 8px;
-    }
-    #welcomeMsg {
-      margin-top: 20px;
-      font-size: 1.2rem;
       color: #0f0;
+      box-shadow: 0 0 10px #0ff inset;
+      width: 100%;
     }
-    ul {
-      padding-left: 0;
+
+    ul#teamList {
       list-style: none;
+      padding-left: 0;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #0ff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #0ff inset;
     }
-    ul li {
-      margin-bottom: 10px;
+    ul#teamList li {
+      padding: 12px 15px;
+      border-bottom: 1px solid #0f0;
+    }
+
+    #welcomeMsg {
+      margin-top: 25px;
+      font-size: 1.4rem;
     }
   </style>
 </head>
 <body>
+
   <h1>KCSSPNR Vetélkedő</h1>
   <nav>
-    <button onclick="showSection('register')">Csapat regisztrálása</button>
-    <button onclick="showSection('teams')">Nevezett csapatok</button>
-    <button onclick="showSection('admin')">Bejelentkezés (admin)</button>
+    <button onclick="showSection('registerSection')">Csapat regisztrálása</button>
+    <button onclick="showSection('answersSection')">Válaszok beadása</button>
+    <button onclick="showSection('teamsSection')">Nevezett csapatok</button>
+    <button onclick="showSection('adminSection')">Bejelentkezés (admin)</button>
   </nav>
-  <section id="register">
+
+  <section id="registerSection">
     <h2>Csapat regisztrálása</h2>
-    <input id="teamName" placeholder="Csapatnév">
-    <input id="member1" placeholder="Tag 1">
-    <input id="member2" placeholder="Tag 2">
-    <input id="member3" placeholder="Tag 3">
-    <input id="member4" placeholder="Tag 4">
-    <input id="teamPassword" type="password" placeholder="Jelszó">
+    <input id="teamName" placeholder="Csapatnév" />
+    <input id="member1" placeholder="Tag 1" />
+    <input id="member2" placeholder="Tag 2" />
+    <input id="member3" placeholder="Tag 3" />
+    <input id="member4" placeholder="Tag 4" />
     <button onclick="registerTeam()">Regisztráció</button>
     <p id="welcomeMsg"></p>
   </section>
-  <section id="teams">
+
+  <section id="answersSection">
+    <h2>Válaszok beadása</h2>
+    <input type="number" id="ans1" placeholder="Hangérzékelők" />
+    <input type="number" id="ans2" placeholder="Hőkamerák" />
+    <input type="number" id="ans3" placeholder="Kamerák" />
+    <input type="number" id="ans4" placeholder="Mozgásérzékelők" />
+    <button onclick="submitAnswers()">Mentés</button>
+  </section>
+
+  <section id="teamsSection">
     <h2>Nevezett csapatok</h2>
     <ul id="teamList"></ul>
   </section>
-  <section id="admin">
-    <h2>Admin belépés</h2>
-    <input id="adminPassword" type="password" placeholder="Jelszó">
-    <button onclick="adminLogin()">Belépés</button>
+
+  <section id="adminSection">
+    <h2>Admin bejelentkezés</h2>
+    <input id="adminPass" type="password" placeholder="Admin jelszó" />
+    <button onclick="loginAdmin()">Bejelentkezés</button>
     <p id="adminStatus"></p>
   </section>
-  <script>
-    let adminLoggedIn = false;
-    function showSection(id) {
-      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      if (id === 'teams') renderTeams();
-    }
-    function registerTeam() {
-      const name = teamName.value.trim();
-      const members = [member1.value, member2.value, member3.value, member4.value];
-      const password = teamPassword.value;
-      if (!name || members.some(m => m.trim() === '') || !password) return alert("Minden mező kitöltése kötelező!");
-      const teams = JSON.parse(localStorage.getItem('teams') || '[]');
-      if (teams.find(t => t.name === name)) return alert("Már létezik ilyen nevű csapat!");
-      teams.push({ name, members, password, answers: {} });
-      localStorage.setItem('teams', JSON.stringify(teams));
-      localStorage.setItem('currentTeam', name);
-      updateWelcome();
-    }
-    function updateWelcome() {
-      const team = localStorage.getItem('currentTeam');
-      welcomeMsg.textContent = team ? `Üdvözlünk titeket, ${team} csapat!` : '';
-    }
-    function adminLogin() {
-      if (adminPassword.value === 'wPk4ibAwk') {
-        adminLoggedIn = true;
-        adminStatus.textContent = 'Sikeres belépés';
-        showSection('teams');
-      } else {
-        adminStatus.textContent = 'Hibás jelszó';
+
+<script>
+  const ADMIN_PASSWORD = "wPk4ibAwk";
+  let isAdmin = false;
+
+  function showSection(id) {
+    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (id === 'teamsSection') renderTeamList();
+    if (id === 'answersSection') loadAnswers();
+  }
+
+  function registerTeam() {
+    const name = document.getElementById("teamName").value.trim();
+    const members = ["member1", "member2", "member3", "member4"].map(id =>
+      document.getElementById(id).value.trim()
+    );
+    if (!name || members.some(m => !m)) return alert("Tölts ki minden mezőt!");
+
+    let teams = JSON.parse(localStorage.getItem("teams") || "[]");
+    if (teams.find(t => t.name.toLowerCase() === name.toLowerCase())) return alert("Már van ilyen csapat!");
+
+    teams.push({ name, members, answers: ["", "", "", ""] });
+    localStorage.setItem("teams", JSON.stringify(teams));
+    localStorage.setItem("loggedTeam", name);
+    document.getElementById("welcomeMsg").textContent = `Üdvözlünk titeket, ${name} csapat!`;
+  }
+
+  function loadAnswers() {
+    const name = localStorage.getItem("loggedTeam");
+    if (!name) return alert("Nem vagy bejelentkezve.");
+    const teams = JSON.parse(localStorage.getItem("teams") || "[]");
+    const team = teams.find(t => t.name === name);
+    if (!team) return;
+    ["ans1","ans2","ans3","ans4"].forEach((id,i)=>{
+      document.getElementById(id).value = team.answers[i] || "";
+    });
+  }
+
+  function submitAnswers() {
+    const name = localStorage.getItem("loggedTeam");
+    if (!name) return alert("Nem vagy bejelentkezve.");
+    const teams = JSON.parse(localStorage.getItem("teams") || "[]");
+    const team = teams.find(t => t.name === name);
+    if (!team) return;
+    team.answers = ["ans1","ans2","ans3","ans4"].map(id => document.getElementById(id).value);
+    localStorage.setItem("teams", JSON.stringify(teams));
+    alert("Mentve!");
+  }
+
+  function renderTeamList() {
+    const ul = document.getElementById("teamList");
+    ul.innerHTML = "";
+    const teams = JSON.parse(localStorage.getItem("teams") || "[]");
+    teams.forEach((team, i) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>${team.name}</strong><br>Tagok: ${team.members.join(", ")}`;
+      if (isAdmin) {
+        li.innerHTML += `<br>Válaszok: ${team.answers.join(" | ")}`;
+        li.innerHTML += ` <button onclick="deleteTeam(${i})">Törlés</button>`;
       }
+      ul.appendChild(li);
+    });
+  }
+
+  function deleteTeam(index) {
+    const teams = JSON.parse(localStorage.getItem("teams") || "[]");
+    teams.splice(index, 1);
+    localStorage.setItem("teams", JSON.stringify(teams));
+    renderTeamList();
+  }
+
+  function loginAdmin() {
+    const input = document.getElementById("adminPass").value;
+    if (input === ADMIN_PASSWORD) {
+      isAdmin = true;
+      document.getElementById("adminStatus").textContent = "Sikeres admin belépés!";
+      renderTeamList();
+    } else {
+      document.getElementById("adminStatus").textContent = "Hibás jelszó!";
     }
-    function renderTeams() {
-      const teams = JSON.parse(localStorage.getItem('teams') || '[]');
-      teamList.innerHTML = '';
-      if (!teams.length) return teamList.innerHTML = '<li>Nincs csapat.</li>';
-      teams.forEach((team, index) => {
-        const li = document.createElement('li');
-        const answers = team.answers || {};
-        li.innerHTML = `
-          <strong>${team.name}</strong> - ${team.members.join(', ')}<br>
-          ${adminLoggedIn ? `
-            <label>Hangérzékelők: <input type="number" onchange="saveAnswer(${index}, 'hang', this.value)" value="${answers.hang || ''}"></label><br>
-            <label>Hőkamerák: <input type="number" onchange="saveAnswer(${index}, 'hokamera', this.value)" value="${answers.hokamera || ''}"></label><br>
-            <label>Kamerák: <input type="number" onchange="saveAnswer(${index}, 'kamera', this.value)" value="${answers.kamera || ''}"></label><br>
-            <label>Mozgásérzékelők: <input type="number" onchange="saveAnswer(${index}, 'mozgas', this.value)" value="${answers.mozgas || ''}"></label><br>
-            <button onclick="deleteTeam(${index})">Törlés</button>
-          ` : ''}`;
-        teamList.appendChild(li);
-      });
-    }
-    function saveAnswer(index, task, value) {
-      const teams = JSON.parse(localStorage.getItem('teams') || '[]');
-      if (!teams[index].answers) teams[index].answers = {};
-      teams[index].answers[task] = value;
-      localStorage.setItem('teams', JSON.stringify(teams));
-    }
-    function deleteTeam(index) {
-      const teams = JSON.parse(localStorage.getItem('teams') || '[]');
-      const removed = teams.splice(index, 1);
-      localStorage.setItem('teams', JSON.stringify(teams));
-      alert(`Törölve: ${removed[0].name}`);
-      renderTeams();
-    }
-    updateWelcome();
-    showSection('register');
-  </script>
+  }
+
+  window.onload = () => {
+    const current = localStorage.getItem("loggedTeam");
+    if (current) document.getElementById("welcomeMsg").textContent = `Üdvözlünk titeket, ${current} csapat!`;
+  }
+</script>
+
 </body>
 </html>
+
 
