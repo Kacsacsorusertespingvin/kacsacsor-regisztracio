@@ -1,18 +1,35 @@
-﻿body {
-  background-color: black;
-  color: lime;
-  font-family: monospace;
+body {
+  background-color: #000;
+  color: #39ff14;
+  font-family: 'Courier New', monospace;
   text-align: center;
-  padding: 30px;
+  margin: 0;
+  padding: 0;
 }
 
-input, button {
-  padding: 10px;
-  margin: 5px;
-  font-size: 16px;
-  border-radius: 5px;
-  border: none;
-  background-color: #111;
-  color: #0f0;
-  border: 1px solid #0f0;
+.container {
+  padding-top: 100px;
+}
+
+h1 {
+  font-size: 3em;
+  margin-bottom: 50px;
+}
+
+button {
+  display: block;
+  margin: 20px auto;
+  padding: 15px 40px;
+  font-size: 1.2em;
+  background-color: #000;
+  color: #39ff14;
+  border: 2px solid #39ff14;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #39ff14;
+  color: #000;
 }
