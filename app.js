@@ -1,7 +1,7 @@
 // Firebase inicializálása
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import {
-  getAuth, signInWithEmailAndPassword, onAuthStateChanged
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 import {
   getFirestore, collection, addDoc, getDocs, query, where,
@@ -28,20 +28,18 @@ function showSection(id) {
   document.getElementById(id).classList.remove("hidden");
 }
 
-// Gombok
-document.getElementById("btnRegister").onclick = () => {
-  showSection("registerSection");
-};
-document.getElementById("btnTeams").onclick = () => {
-  showSection("teamsSection");
-  loadTeams();
-};
-document.getElementById("btnAdminLogin").onclick = () => {
-  showSection("adminSection");
-  checkAdminAuth();
-};
+// Segédfüggvény csapat ellenőrzéshez jelszóval Firestore-ból
+async function checkTeamLogin(teamName, password) {
+  const teamsRef = collection(db, "teams");
+  const q = query(teamsRef, where("name", "==", teamName));
+  const querySnapshot = await getDocs(q);
+  if (querySnapshot.empty) return false;
 
-// Regisztráció
+  const teamData = querySnapshot.docs[0].data();
+  return teamData.password === password;
+}
+
+// Csapat regisztráció
 document.getElementById("registerBtn").onclick = async () => {
   const name = document.getElementById("teamName").value.trim();
   const members = [
@@ -58,7 +56,6 @@ document.getElementById("registerBtn").onclick = async () => {
   }
 
   try {
-    // Ellenőrzés, hogy nincs-e már ilyen csapatnév
     const teamsRef = collection(db, "teams");
     const q = query(teamsRef, where("name", "==", name));
     const snapshot = await getDocs(q);
@@ -74,29 +71,17 @@ document.getElementById("registerBtn").onclick = async () => {
       solutions: [],
     });
 
+    // Mentjük localStorage-ba, hogy be legyen jelentkezve
     localStorage.setItem("teamName", name);
+    localStorage.setItem("teamPassword", password);
 
     alert(`Üdvözlünk titeket, ${name} csapat!`);
-    document.getElementById("welcomeTeamName").textContent = name;
-    showSection("uploadSection");
+    showTeamWelcome(name);
 
   } catch (e) {
     alert("Hiba történt: " + e.message);
   }
 };
-
-// Csapatok betöltése és listázása
-async function loadTeams() {
-  const list = document.getElementById("teamList");
-  list.innerHTML = "";
-  const snapshot = await getDocs(collection(db, "teams"));
-  snapshot.forEach(docSnap => {
-    const team = docSnap.data();
-    const li = document.createElement("li");
-    li.textContent = `${team.name}: ${team.members.join(", ")}`;
-    list.appendChild(li);
-  });
-}
 
 // Megoldások feltöltése (4 szám)
 document.getElementById("submitSolutionsBtn").onclick = async () => {
@@ -112,8 +97,18 @@ document.getElementById("submitSolutionsBtn").onclick = async () => {
   }
 
   const teamName = localStorage.getItem("teamName");
-  if (!teamName) {
+  const teamPassword = localStorage.getItem("teamPassword");
+  if (!teamName || !teamPassword) {
     alert("Nem vagy bejelentkezve csapatként.");
+    return;
+  }
+
+  // Még egyszer ellenőrizzük, hogy érvényes a csapat + jelszó
+  if (!(await checkTeamLogin(teamName, teamPassword))) {
+    alert("Bejelentkezési adat hibás, kérlek regisztrálj újra.");
+    localStorage.removeItem("teamName");
+    localStorage.removeItem("teamPassword");
+    showSection("registerSection");
     return;
   }
 
@@ -133,6 +128,19 @@ document.getElementById("submitSolutionsBtn").onclick = async () => {
   }
 };
 
+// Csapatok betöltése listázáshoz
+async function loadTeams() {
+  const list = document.getElementById("teamList");
+  list.innerHTML = "";
+  const snapshot = await getDocs(collection(db, "teams"));
+  snapshot.forEach(docSnap => {
+    const team = docSnap.data();
+    const li = document.createElement("li");
+    li.textContent = `${team.name}: ${team.members.join(", ")}`;
+    list.appendChild(li);
+  });
+}
+
 // Admin bejelentkezés
 document.getElementById("adminLoginBtn").onclick = () => {
   const email = document.getElementById("adminEmail").value.trim();
@@ -143,22 +151,22 @@ document.getElementById("adminLoginBtn").onclick = () => {
       alert("Admin bejelentkezve");
       loadAdminTeams();
       loadDeletionLogs();
+      showSection("adminSection");
     })
     .catch(e => alert("Hiba: " + e.message));
 };
 
-function checkAdminAuth() {
-  onAuthStateChanged(auth, user => {
-    if (user) {
-      loadAdminTeams();
-      loadDeletionLogs();
-    }
-  });
-}
-
-// Admin: csapatok betöltése + törlés
+// Admin csapatok betöltése
 async function loadAdminTeams() {
   const list = document.getElementById("adminTeamList");
   list.innerHTML = "";
- 
+  const snapshot = await getDocs(collection(db, "teams"));
+  snapshot.forEach(docSnap => {
+    const team = docSnap.data();
+    const li = document.createElement("li");
+    li.textContent = `${team.name}: ${team.members.join(", ")}`;
+
+    // Törlés gomb adminnak
+    const btnDel = document.createElement
+
 
