@@ -4,7 +4,163 @@
   <meta charset="UTF-8">
   <title>KCSSPNR Vetélkedő</title>
   <style>
-    /* ... A TE EREDETI STÍLUSAID IDE KERÜLNEK ... (megtartva, nem ismétlem itt a hely szűke miatt) */
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #000;
+      color: #0f0;
+      font-family: 'Orbitron', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #0ff;
+      text-shadow: 0 0 8px #0ff, 0 0 16px #0ff, 0 0 24px #0ff;
+      margin-bottom: 20px;
+      animation: glow 2s infinite alternate;
+    }
+
+    nav {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+
+    button {
+      background: transparent;
+      border: 2px solid #0ff;
+      color: #0ff;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    button::before {
+      content: "";
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at center, rgba(0,255,255,0.2), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.5s;
+      z-index: -1;
+    }
+
+    button:hover::before {
+      opacity: 1;
+    }
+
+    button:hover {
+      background: #0ff;
+      color: #000;
+      box-shadow: 0 0 8px #0ff, 0 0 16px #0ff;
+    }
+
+    section {
+      display: none;
+      width: 100%;
+      max-width: 600px;
+      background: rgba(0, 255, 255, 0.05);
+      border: 2px solid #0ff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 10px #0ff inset;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    section.active {
+      display: block;
+    }
+
+    input {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      background: #111;
+      border: 2px solid #0ff;
+      border-radius: 8px;
+      color: #0f0;
+      font-size: 1rem;
+      box-shadow: 0 0 6px #0ff inset;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #0ff;
+      box-shadow: 0 0 8px #0ff inset;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      background: #111;
+      margin: 8px 0;
+      padding: 10px;
+      border: 1px solid #0ff;
+      border-radius: 6px;
+      animation: slideIn 0.5s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .delete-btn {
+      background: #300;
+      border: 1px solid #f00;
+      color: #f00;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .delete-btn:hover {
+      background: #f00;
+      color: #000;
+    }
+
+    #msgRegister, #msgAnswers, #msgCode {
+      text-align: center;
+      margin: 10px 0;
+      font-weight: bold;
+      color: #0ff;
+      text-shadow: 0 0 4px #0ff;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 8px #0ff; }
+      to   { text-shadow: 0 0 16px #0ff; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity:0; transform: translateX(-20px); }
+      to { opacity:1; transform: translateX(0); }
+    }
   </style>
 
   <!-- Firebase SDK-k -->
@@ -20,7 +176,6 @@
     <button onclick="promptCode()">Nevezett csapatok</button>
   </nav>
 
-  <!-- Regisztráció -->
   <section id="register">
     <h2>Csapat regisztrálása</h2>
     <input id="teamName" placeholder="Csapatnév">
@@ -32,15 +187,17 @@
     <p id="msgRegister"></p>
   </section>
 
-  <!-- Szabályzat -->
   <section id="rules">
-    <!-- A TE EREDETI SZABÁLYZATOD MARAD ITT -->
     <h2>Szabályzat</h2>
     <p>A vetélkedő során szükséges legalább egy mobilinternettel rendelkező telefon.</p>
-    <!-- stb... -->
+    <p>Az egész esemény során használható az internet.</p>
+    <p>Az esemény során 4+1 feladatot kell majd megoldani, az 5. feladat az első 4 megoldására épül, és az ötödik feladat megoldását kérdezi majd a "Biztonsági panel".</p>
+    <p>Az esemény során minimum 2, maximum 4 fős csoportokat lehet alkotni, megoldásokat lehet cserélni, de vegyétek figyelembe, hogy csak az első csapat kap majd valami kisebb jutalmat.</p>
+    <p>A vetélkedő akkor ér véget, amikor az első csoport beírta helyesen a biztonsági kódot, megkapta a nyertes üzenetet, és megmutatta azt.</p>
+    <p>Amennyiben a feladatok túl nehéznek bizonyulnak, az oldalak frissülni fognak, és sárgával segítségek fognak megjelenni.</p>
+    <p>A feladatok QR kódok formájában lesznek szétszórva a teremben. A legkönnyebb módja a beolvasásuknak a Google Lens használata.</p>
   </section>
 
-  <!-- Kód bekérés -->
   <section id="codeSection">
     <h2>Admin kód szükséges</h2>
     <input id="adminCode" type="password" placeholder="Írd be a kódot">
@@ -48,14 +205,12 @@
     <p id="msgCode"></p>
   </section>
 
-  <!-- Csapatok -->
   <section id="teams">
     <h2>Nevezett csapatok</h2>
     <ul id="teamsList"></ul>
   </section>
 
 <script>
-  // Firebase konfiguráció
   const firebaseConfig = {
     apiKey: "AIzaSyBDNfbKRe9IBAnTKHoSGj06dWULk3i_kag",
     authDomain: "segitsegkozpont.firebaseapp.com",
@@ -142,10 +297,7 @@
 
   window.onload = () => show('register');
 </script>
+
 </body>
 </html>
-
-
-
-
 
